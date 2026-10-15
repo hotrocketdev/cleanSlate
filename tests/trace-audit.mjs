@@ -4,6 +4,9 @@
 // Run: node tests/trace-audit.mjs
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { requireMediaTools } from './lib/tools.mjs';
+
+requireMediaTools();
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 

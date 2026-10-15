@@ -18,6 +18,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: install ffmpeg (tests decode the media to prove no quality loss)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
       - name: index.html is generated from src/
         run: |
           node scripts/build.mjs
@@ -48,6 +50,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: install ffmpeg (tests decode the media to prove no quality loss)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
       - name: install playwright
         run: |
           npm i --no-save playwright

@@ -1,6 +1,9 @@
 // tests/make-fixtures.mjs — builds real fixtures with AI metadata inside.
 // Deps: ffmpeg/ffprobe on PATH. Run: node tests/make-fixtures.mjs
 import { execFileSync } from 'node:child_process';
+import { requireMediaTools } from './lib/tools.mjs';
+
+requireMediaTools();
 import { mkdirSync, writeFileSync, readFileSync, copyFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';

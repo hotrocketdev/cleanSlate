@@ -3,6 +3,9 @@
 // Run: node tests/browser-test.mjs
 import { existsSync, readFileSync, readdirSync, mkdirSync, rmSync, statSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { requireMediaTools } from './lib/tools.mjs';
+
+requireMediaTools();
 import { createRequire } from 'node:module';
 import { dirname, resolve, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';

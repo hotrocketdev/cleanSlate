@@ -4,6 +4,9 @@
 //      CLEANSLATE_CORE=<file.js> node tests/core-test.mjs   (core from a source file)
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { requireMediaTools } from './lib/tools.mjs';
+
+requireMediaTools();
 import { dirname, resolve, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 

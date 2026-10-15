@@ -5,6 +5,9 @@
 // Run: node tests/deep-clean-test.mjs
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { requireMediaTools } from './lib/tools.mjs';
+
+requireMediaTools();
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
