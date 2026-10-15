@@ -1,0 +1,16 @@
+{
+  "name": "cleanslate",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Offline metadata and machine-trace remover for images and videos. Single file, no uploads, no quality loss.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "fixtures": "node tests/make-fixtures.mjs",
+    "test": "node tests/core-test.mjs && node tests/deep-clean-test.mjs",
+    "test:browser": "node tests/browser-test.mjs",
+    "audit": "node tests/trace-audit.mjs",
+    "clean-one": "node tests/clean-one.mjs"
+  }
+}

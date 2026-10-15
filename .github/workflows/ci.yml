@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: index.html is generated from src/
+        run: |
+          node scripts/build.mjs
+          git diff --exit-code -- index.html
+      - name: build fixtures (real files with real metadata)
+        run: node tests/make-fixtures.mjs
+      - name: engine tests
+        run: node tests/core-test.mjs
+      - name: deep clean — no traces left, no quality lost
+        run: node tests/deep-clean-test.mjs
+      - name: trace audit scorecard
+        run: node tests/trace-audit.mjs
+      - name: package the offline build
+        run: |
+          mkdir -p dist/CleanSlate
+          cp index.html README.txt dist/CleanSlate/
+          (cd dist && zip -r CleanSlate.zip CleanSlate)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CleanSlate-offline
+          path: dist/CleanSlate.zip
+
+  browser:
+    name: browser
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: install playwright
+        run: |
+          npm i --no-save playwright
+          npx playwright install --with-deps chromium
+      - run: node tests/make-fixtures.mjs
+      - name: end-to-end in a real browser
+        run: node tests/browser-test.mjs

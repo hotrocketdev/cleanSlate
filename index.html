@@ -1,0 +1,1842 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CleanSlate — Image Metadata Remover</title>
+  <style>
+    :root{--ink:#18231d;--muted:#68736d;--cream:#f6f4ed;--paper:#fffefa;--green:#1f6946;--dark:#174e36;--mint:#dceee2;--line:#dce1dc}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Arial,sans-serif}button,input{font:inherit}button{color:inherit}.nav{width:min(1120px,calc(100% - 40px));height:78px;margin:auto;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;font-weight:750;font-size:20px}.logo{width:34px;height:34px;border-radius:10px;background:var(--green);color:white;display:grid;place-items:center}.local{border:1px solid var(--line);background:#ffffffb8;border-radius:99px;padding:9px 14px;font-size:12px;color:#526059}.local i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#35a66b;box-shadow:0 0 0 4px #dff3e7;margin-right:8px}.hero{text-align:center;padding:58px 20px 42px;position:relative}.hero:before{content:"";position:absolute;width:520px;height:300px;border-radius:50%;background:radial-gradient(circle,#cae2d3a8,transparent 66%);left:50%;top:0;transform:translateX(-50%);pointer-events:none}.eyebrow{position:relative;color:var(--green);text-transform:uppercase;letter-spacing:.16em;font-size:11px;font-weight:750}.hero h1{position:relative;margin:18px auto;max-width:900px;font-family:Georgia,serif;font-size:clamp(46px,7vw,82px);line-height:.98;letter-spacing:-.055em;font-weight:500}.hero h1 em{color:var(--green);font-weight:500}.hero p{position:relative;margin:auto;max-width:690px;color:var(--muted);font-size:17px;line-height:1.65}.app{width:min(1040px,calc(100% - 40px));margin:24px auto;display:grid;grid-template-columns:1.4fr .8fr;background:var(--paper);border:1px solid #d5ddd7;border-radius:22px;overflow:hidden;box-shadow:0 25px 70px #28372e17}.drop{min-height:410px;margin:22px;border:2px dashed #aebbb2;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:.2s;background:linear-gradient(145deg,#f4f9f580,#ffffffb3);text-align:center}.drop:hover,.drop.drag{border-color:var(--green);background:#f1f8f3;transform:translateY(-2px)}.drop input{display:none}.upload{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:var(--mint);color:var(--green);font-size:28px;margin-bottom:18px}.drop h2{margin:0 0 8px;font-size:21px}.drop p{margin:0;color:var(--muted);font-size:13px}.types{display:flex;gap:7px;margin-top:22px}.types span{padding:5px 7px;border:1px solid var(--line);border-radius:5px;background:white;font:600 9px monospace;color:#718078}.settings{background:#f1f1eb;border-left:1px solid var(--line);padding:28px 26px}.settings h2{font-size:15px;margin:0 0 24px}.label{display:block;font-size:10px;font-weight:700;color:#556159;margin-bottom:9px;text-transform:uppercase;letter-spacing:.09em}.formats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:23px}.formats button{cursor:pointer;background:white;border:1px solid var(--line);border-radius:8px;padding:10px 4px;font-size:12px;font-weight:650}.formats button.active{background:var(--green);border-color:var(--green);color:white}.quality-head{display:flex;justify-content:space-between}.quality-head output{color:var(--green);font-size:12px;font-weight:700}.range{width:100%;accent-color:var(--green)}.range-note{display:flex;justify-content:space-between;color:#89918c;font-size:9px;margin-top:4px}.background{display:flex;justify-content:space-between;align-items:center;margin-top:22px}.background small{display:block;color:#838e87;font-size:9px}.background input{width:38px;height:32px;border:0;background:transparent}.removed{border-top:1px solid var(--line);margin-top:24px;padding-top:17px}.removed p{font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:#77817b}.removed div{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:10px;color:#4d5b53}.clean{width:100%;min-height:47px;margin-top:23px;border:0;border-radius:10px;background:var(--green);color:#fff;font-weight:700;font-size:13px;cursor:pointer}.clean:hover:not(:disabled){background:var(--dark)}.clean:disabled{opacity:.45;cursor:not-allowed}.queue{display:none;width:min(1040px,calc(100% - 40px));margin:18px auto;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:22px}.queue.show{display:block}.queue-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.queue h2{font-size:16px;margin:0}.queue-head p{font-size:10px;color:var(--muted);margin:4px 0 0}.link{border:0;background:none;color:#8d5a50;font-size:11px;cursor:pointer}.list{display:grid;gap:8px}.card{display:grid;grid-template-columns:48px minmax(0,1fr) auto 34px;align-items:center;gap:12px;padding:9px;border:1px solid #e7e9e5;border-radius:10px;background:white}.card img{width:48px;height:48px;object-fit:cover;border-radius:7px;background:#edf0ec}.info{min-width:0}.info strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}.info span,.status small{font-size:9px;color:var(--muted)}.status{font-size:10px;color:#7e8982;text-align:right}.status.done{color:var(--green);font-weight:700}.status.error{color:#a34537}.icon{width:30px;height:30px;border:1px solid #e4e7e3;border-radius:8px;background:#fafbf9;cursor:pointer}.icon.download{background:var(--mint);color:var(--green);border-color:#d1e6d8;font-weight:bold}.downloadbar{display:none;margin-top:15px;background:var(--dark);color:white;border-radius:12px;padding:14px 16px;align-items:center;justify-content:space-between}.downloadbar.show{display:flex}.downloadbar strong{font-size:12px}.downloadbar small{display:block;color:#bcd2c4;font-size:9px;margin-top:3px}.downloadbar button{border:0;background:white;color:var(--dark);border-radius:8px;padding:10px 13px;font-weight:700;font-size:11px;cursor:pointer}.trust{width:min(900px,calc(100% - 40px));margin:65px auto 42px;display:grid;grid-template-columns:repeat(3,1fr);text-align:center}.trust div{padding:0 25px;border-right:1px solid var(--line)}.trust div:last-child{border:0}.trust b{display:block;font-family:Georgia,serif;font-size:15px}.trust p{font-size:11px;color:var(--muted)}.notice{width:min(820px,calc(100% - 40px));margin:0 auto 55px;padding:16px 19px;border-left:3px solid #a8bcae;background:#ffffff75;font-size:11px;line-height:1.55;color:var(--muted)}.notice b{color:var(--ink)}footer{width:min(1120px,calc(100% - 40px));border-top:1px solid var(--line);margin:auto;padding:26px 0 34px;display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}footer b{color:var(--ink)}
+    @media(max-width:760px){.hero{padding-top:40px}.hero h1{font-size:clamp(42px,13vw,62px)}.app{grid-template-columns:1fr}.drop{min-height:300px}.settings{border-left:0;border-top:1px solid var(--line)}.trust{grid-template-columns:1fr;gap:25px}.trust div{border:0}.status{display:none}}@media(max-width:480px){.nav,.app,.queue,.notice,footer{width:calc(100% - 24px)}.local{font-size:9px}.drop{margin:12px;padding:18px}.settings{padding:23px 19px}.card{grid-template-columns:44px minmax(0,1fr) 32px}.card img{width:44px;height:44px}.downloadbar{gap:10px}.downloadbar button{white-space:nowrap}}
+    .rename-box,.resize-box{border:1px solid var(--line);background:#ffffff9c;border-radius:10px;padding:12px;margin-bottom:20px}.checkrow{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;cursor:pointer}.checkrow input{accent-color:var(--green)}.rename-controls{display:none;margin-top:12px}.rename-controls.show{display:block}.rename-controls input[type=text],.rename-controls input[type=number],.resize-box select{width:100%;border:1px solid #cfd7d1;background:white;border-radius:7px;padding:9px 10px;font-size:12px;outline:none}.rename-controls input:focus,.resize-box select:focus{border-color:var(--green);box-shadow:0 0 0 2px #1f69461a}.rename-options{display:grid;grid-template-columns:1fr 76px;gap:9px;margin-top:10px;align-items:end}.rename-options .checkrow{padding-bottom:9px;font-weight:500}.rename-preview{margin:9px 0 0;color:var(--green);font:600 10px monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.resize-box{margin-bottom:20px}.resize-box .label:not(:first-child){margin-top:14px}.resize-note{margin:8px 0 0;color:var(--muted);font-size:10px;line-height:1.45}
+    /* --- CleanSlate 2.0: AI trace report, per-file findings, video rows --- */
+    .modebox{margin-bottom:20px}
+    .modeformats{grid-template-columns:1fr 1fr;margin-bottom:0}
+    .modeformats button{font-size:11px;padding:9px 4px}
+    .settings.lossless .resize-box .label,.settings.lossless .resize-box select,.settings.lossless .resize-box .resize-note{opacity:.45;pointer-events:none}
+    .settings:not(.rebuildmode) #qualityBox,.settings:not(.rebuildmode) #backgroundBox{opacity:.45;pointer-events:none}
+    .settings.dim .modebox{opacity:.45;pointer-events:none}
+    .chip{display:inline-flex;align-items:center;border-radius:99px;padding:3px 9px;font-size:10px;font-weight:750;background:#eef1ee;color:#4d5b53;border:1px solid var(--line);white-space:nowrap}
+    .chip.ai{background:#fdeceb;color:#a3312a;border-color:#f6d3d0}
+    .chip.clean{background:#eaf5ee;color:var(--green);border-color:#cfe6d8}
+    .chip.machine{background:#eef2f7;color:#38506b;border-color:#d3dee9}
+    .frow.machine b{background:#eef2f7;color:#38506b}
+    .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+    .card>.chips,.card>.err,.card>.find-toggle,.card>.findings{grid-column:1/-1}
+    .find-toggle{justify-self:start;padding:0;font-size:10px}
+    .findings{display:none;margin-top:2px;border-top:1px dashed var(--line);padding-top:8px}
+    .findings.show{display:block}
+    .frow{display:grid;grid-template-columns:34px 132px minmax(0,1fr);gap:8px;align-items:start;padding:5px 0;border-bottom:1px solid #f2f4f1;font-size:11px}
+    .frow:last-child{border-bottom:0}
+    .frow b{font-size:9px;font-weight:750;text-transform:uppercase;text-align:center;border-radius:4px;background:#eef1ee;color:#5b6a62;padding:2px 0}
+    .frow.ai b{background:#fdeceb;color:#a3312a}
+    .frow .fname{font-weight:700;word-break:break-word}
+    .frow .fval{color:var(--muted);word-break:break-word}
+    .frow i{grid-column:2/-1;font-style:normal;font-size:9px;color:#9aa69e}
+    .findings .note{margin:6px 0 0;font-size:10px;color:#8d7a4a}
+    .err{margin:4px 0 0;font-size:11px;color:#a3312a}
+    .vid{width:48px;height:48px;border-radius:7px;display:grid;place-items:center;font-size:18px;color:#fff;background:linear-gradient(135deg,var(--green),var(--dark))}
+    .report{display:none;margin-bottom:14px;border:1px solid var(--line);border-radius:12px;background:#fffdf7;padding:12px 14px}
+    .report.show{display:block}
+    .report-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .report-head b{font-size:12px}
+    .rline{margin:7px 0 0;font-size:11px;color:var(--muted)}
+    .videonote{margin:-8px 0 20px;font-size:10px;line-height:1.5;color:var(--muted)}
+    .settings.dim .formats,.settings.dim .resize-box,.settings.dim #qualityBox,.settings.dim #backgroundBox{opacity:.4;pointer-events:none}
+    .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(10px);background:var(--dark);color:#fff;border-radius:10px;padding:11px 16px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:9;max-width:min(540px,90vw)}
+    .toast.show{opacity:1;transform:translateX(-50%)}
+    @media(max-width:480px){.card>.chips{grid-column:1/-1}.frow{grid-template-columns:32px minmax(0,1fr)}.frow .fval{grid-column:2;color:var(--ink)}.frow i{grid-column:2}}
+  </style>
+</head>
+<body>
+  <nav class="nav"><div class="brand"><span class="logo">✓</span>CleanSlate</div><div class="local"><i></i>100% local · Nothing uploaded</div></nav>
+  <section class="hero"><div class="eyebrow">◇ Private by design</div><h1>Remove image metadata.<br><em>Keep the moment.</em></h1><p>Strip EXIF, XMP, IPTC, embedded C2PA Content Credentials and AI generator tags from photos and videos—and see exactly what was hiding in every file first.</p></section>
+  <section class="app">
+    <div class="drop" id="drop" role="button" tabindex="0"><input id="picker" type="file" accept="image/jpeg,image/png,image/webp,image/bmp,video/mp4,video/quicktime,video/x-m4v,.mp4,.mov,.m4v" multiple><div class="upload">⇧</div><h2>Drop images or videos here</h2><p>or click to browse · as many files as you like · nothing is uploaded</p><div class="types"><span>JPG</span><span>PNG</span><span>WEBP</span><span>BMP</span><span>MP4</span><span>MOV</span><span>M4V</span></div></div>
+    <aside class="settings"><h2>Output settings</h2><div class="modebox" id="modeBox"><label class="label">Image output</label><div class="formats modeformats"><button class="active" data-mode="lossless">Strip only · lossless</button><button data-mode="rebuild">Rebuild &amp; resize</button></div><p class="resize-note" id="modeNote"></p></div><p class="videonote">Format, social size and quality only apply in Rebuild mode. Videos are always cleaned losslessly: same codec, same quality, same frame rate — their metadata and in-stream encoder IDs are removed instead.</p><label class="label">Format</label><div class="formats" id="formatRow"><button class="active" data-format="image/jpeg">JPEG</button><button data-format="image/png">PNG</button><button data-format="image/webp">WebP</button></div><div class="resize-box"><label class="label" for="resizePreset">Social size</label><select id="resizePreset"><option value="original">Keep original dimensions</option><option value="instagram-portrait">Instagram portrait post · 1080 × 1350</option><option value="instagram-square">Instagram square post · 1080 × 1080</option><option value="instagram-landscape">Instagram landscape post · 1080 × 566</option><option value="meta-vertical">Instagram / Facebook Reel or Story · 1080 × 1920</option><option value="facebook-landscape">Facebook feed post · 1200 × 630</option><option value="facebook-portrait">Facebook portrait post · 1080 × 1350</option><option value="tiktok">TikTok photo post · 1080 × 1920</option><option value="linkedin">LinkedIn post · 1200 × 627</option><option value="x">X post · 1600 × 900</option><option value="pinterest">Pinterest pin · 1000 × 1500</option><option value="youtube">YouTube thumbnail · 1280 × 720</option></select><label class="label" for="resizeMode">Image framing</label><select id="resizeMode"><option value="crop">Crop to fill (recommended)</option><option value="fit">Fit whole image with background</option></select><p class="resize-note" id="resizeNote">Original dimensions will be preserved.</p></div><div class="rename-box"><label class="checkrow"><input id="renameToggle" type="checkbox"> Rename output files</label><div class="rename-controls" id="renameControls"><label class="label" for="baseName">New base name</label><input id="baseName" type="text" value="COV" placeholder="e.g. COV or Coventry Project"><div class="rename-options"><label class="checkrow"><input id="numberFiles" type="checkbox" checked> Add sequence number</label><div><label class="label" for="startNumber">Start at</label><input id="startNumber" type="number" min="0" value="1"></div></div><p class="rename-preview" id="renamePreview">Preview: COV-1.jpg, COV-2.jpg…</p></div></div><div id="qualityBox"><div class="quality-head"><label class="label" for="quality">Quality</label><output id="qualityOut">92%</output></div><input class="range" id="quality" type="range" min="50" max="100" value="92"><div class="range-note"><span>Smaller file</span><span>Best quality</span></div></div><div class="background" id="backgroundBox"><div><label class="label" for="background">Transparency fill</label><small>JPEG does not support transparency</small></div><input id="background" type="color" value="#ffffff"></div><div class="removed"><p>Removed from every file</p><div><span>✓ EXIF &amp; location</span><span>✓ XMP / IPTC</span><span>✓ C2PA manifest</span><span>✓ Device details</span><span>✓ AI generator tags</span><span>✓ Video metadata boxes</span><span>✓ In-stream encoder IDs</span><span>✓ GPS &amp; device fields</span></div></div><button class="clean" id="clean" disabled>Clean files</button></aside>
+  </section>
+  <section class="queue" id="queue"><div class="queue-head"><div><h2>Your files</h2><p id="summary"></p></div><button class="link" id="clear">Clear all</button></div><div class="report" id="report"><div class="report-head"><b id="reportSummary"></b><button class="link" id="reportDownload">Download report</button></div><div id="reportBody"></div></div><div class="list" id="list"></div><div class="downloadbar" id="downloadbar"><div><strong id="ready"></strong><small id="saving"></small></div><button id="downloadAll">Download all as ZIP ↓</button></div></section>
+  <section class="trust"><div><b>Runs on your device</b><p>Your files never leave your browser.</p></div><div><b>Social-ready sizes</b><p>Export to common post, reel and story dimensions.</p></div><div><b>No limits</b><p>No account, uploads or file quotas.</p></div></section>
+  <section class="notice"><b>Good to know:</b> by default images are cleaned losslessly — the tags are deleted but the pixels are never re-encoded, so quality is identical. Videos are cleaned deeper still: the metadata boxes go, and encoder identification written inside the compressed streams (SEI user data, codec configuration, audio fill elements) is neutralised in place, with the video and audio streams left bit-identical. Videos keep their original codec and quality: metadata boxes — XMP, C2PA Content Credentials, iTunes/QuickTime tags, location, encoder strings — are removed, the file is compacted, and in-stream encoder IDs are zeroed. What CleanSlate cannot remove: information visible in the picture itself, invisible pixel-level watermarks such as SynthID, steganography, and anything a platform re-adds on upload.</section>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <footer><b>CleanSlate</b><span>Private image cleaning, entirely in your browser.</span></footer>
+  <script id="cleanslate-core">
+/* ===== CLEANSLATE CORE (pure logic, no DOM) — tests/core-test.mjs extracts this block ===== */
+(function (root) {
+  'use strict';
+
+  const VERSION = '3.0.0';
+
+  /* ---------------- small helpers ---------------- */
+  const DEC8 = new TextDecoder('utf-8', { fatal: false });
+  const DEC16 = new TextDecoder('utf-16le', { fatal: false });
+  const enc8 = (s) => new TextEncoder().encode(s);
+  const be16 = (u, o) => (u[o] << 8) | u[o + 1];
+  const be32 = (u, o) => ((u[o] << 24) | (u[o + 1] << 16) | (u[o + 2] << 8) | u[o + 3]) >>> 0;
+  const be64 = (u, o) => Number(new DataView(u.buffer, u.byteOffset + o, 8).getBigUint64(0));
+  const le32 = (u, o) => (u[o] | (u[o + 1] << 8) | (u[o + 2] << 16) | (u[o + 3] << 24)) >>> 0;
+  const s32 = (u, o) => new DataView(u.buffer, u.byteOffset + o, 4).getInt32(0);
+  const s16 = (u, o) => new DataView(u.buffer, u.byteOffset + o, 2).getInt16(0);
+
+  function bytesText(n) {
+    if (!n) return '0 B';
+    const u = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.min(Math.floor(Math.log(n) / Math.log(1024)), u.length - 1);
+    return `${(n / 1024 ** i).toFixed(i ? 1 : 0)} ${u[i]}`;
+  }
+
+  function latin1(u, from, to) {
+    let s = '';
+    for (let i = from; i < to && i < u.length; i += 4096) s += String.fromCharCode.apply(null, u.subarray(i, Math.min(i + 4096, to)));
+    return s;
+  }
+
+  function fourcc(u, o) {
+    const s = latin1(u, o, o + 4).replace(/[\x00-\x1f]/g, '·');
+    return s.replace(/[\u00a9]/g, '©');
+  }
+
+  // printable ASCII runs
+  function strings(u, opts) {
+    const min = (opts && opts.min) || 4;
+    const cap = (opts && opts.cap) || 12;
+    const out = [];
+    let cur = '';
+    for (let i = 0; i < u.length; i++) {
+      const c = u[i];
+      if (c >= 32 && c <= 126) cur += String.fromCharCode(c);
+      else {
+        if (cur.length >= min) { out.push(cur); if (out.length >= cap) return out; }
+        cur = '';
+      }
+    }
+    if (cur.length >= min && out.length < cap) out.push(cur);
+    return out;
+  }
+
+  // Provenance payloads start with JUMBF/CBOR box headers; the useful text is the
+  // JSON claim or the XMP packet inside them.
+  function provenanceText(payload) {
+    const txt = DEC8.decode(payload).replace(/[\x00-\x1f\x7f]+/g, ' ').trim();
+    const brace = txt.indexOf('{');
+    if (brace !== -1) return txt.slice(brace).replace(/\s+/g, ' ').trim().slice(0, 240);
+    const angle = txt.indexOf('<');
+    if (angle !== -1) return txt.slice(angle).replace(/\s+/g, ' ').trim().slice(0, 240);
+    const s = strings(payload, { min: 4, cap: 5 }).filter((x) => !/^(jumb|jumd|json|cbor|hdlr|free|mdat|moov|data)$/.test(x));
+    return s.join(' | ').slice(0, 240);
+  }
+
+  /* ---------------- AI marker dictionary ---------------- */
+  // [needle (lowercase), label]
+  const AI_MARKS = [
+    ['trainedalgorithmicmedia', 'IPTC digital source type: trained algorithmic media'],
+    ['algorithmicmedia', 'IPTC digital source type: algorithmic media'],
+    ['content credentials', 'Content Credentials'],
+    ['c2pa', 'C2PA provenance manifest'],
+    ['jumbf', 'JUMBF provenance data'],
+    ['dall-e', 'DALL·E'], ['dall·e', 'DALL·E'], ['dalle', 'DALL·E'],
+    ['midjourney', 'Midjourney'], ['stable diffusion', 'Stable Diffusion'], ['stablediffusion', 'Stable Diffusion'],
+    ['sdxl', 'Stable Diffusion XL'], ['automatic1111', 'AUTOMATIC1111'], ['a1111', 'AUTOMATIC1111'],
+    ['comfyui', 'ComfyUI'], ['flux', 'FLUX'], ['firefly', 'Adobe Firefly'], ['imagen', 'Google Imagen'],
+    ['veo', 'Google Veo'], ['sora', 'OpenAI Sora'], ['nano banana', 'Nano Banana'], ['seedream', 'Seedream'],
+    ['ideogram', 'Ideogram'], ['recraft', 'Recraft'], ['leonardo', 'Leonardo.Ai'], ['krea', 'Krea'],
+    ['runway', 'Runway'], ['pika', 'Pika'], ['kling', 'Kling'], ['luma', 'Luma'], ['heygen', 'HeyGen'],
+    ['synthesia', 'Synthesia'], ['elevenlabs', 'ElevenLabs'], ['descript.com', 'Descript'], ['invideo', 'InVideo'],
+    ['opusclip', 'OpusClip'], ['gemini', 'Google Gemini'], ['openai', 'OpenAI'], ['anthropic', 'Anthropic'],
+    ['claude', 'Claude'], ['chatgpt', 'ChatGPT'], ['gpt-image', 'GPT Image'], ['dall', 'DALL·E'],
+    ['grok', 'xAI Grok'], ['copilot', 'Microsoft Copilot'], ['synthid', 'SynthID marker'],
+    ['ai generated', '"AI generated" label'], ['ai-generated', '"AI-generated" label'],
+    ['generated by ai', '"generated by AI" label'], ['made with ai', '"made with AI" label'],
+    ['created with ai', '"created with AI" label'], ['generative', '"generative" label'],
+    ['machine generated', '"machine generated" label'], ['prompt:', 'prompt text'],
+  ];
+
+  function matchAi(text) {
+    if (!text) return [];
+    const hay = text.toLowerCase();
+    const hits = [];
+    for (const [needle, label] of AI_MARKS) {
+      if (hay.indexOf(needle) !== -1 && hits.indexOf(label) === -1) hits.push(label);
+    }
+    return hits;
+  }
+
+  // metadata keys that signal a generation pipeline even without a vendor name
+  const AI_KEYS = [
+    'parameters', 'workflow', 'prompt', 'negative prompt', 'seed', 'sampler', 'steps',
+    'cfg scale', 'model hash', 'generation', 'ai_', 'sd-metadata', 'invokeai', 'dream',
+  ];
+  function matchAiKey(key) {
+    if (!key) return [];
+    const k = key.toLowerCase();
+    const hits = [];
+    for (const n of AI_KEYS) if (k.indexOf(n) !== -1) hits.push('generation metadata key: ' + key);
+    return [...new Set(hits)];
+  }
+
+  function finding(o) {
+    const auto = [...matchAi(o.value || ''), ...matchAi(o.name || '')];
+    const marks = [...new Set([...(o.marks || []), ...auto])];
+    const ai = o.ai === true || auto.length > 0 || o.aiMarks === true;
+    return {
+      where: o.where || '',
+      path: o.path || '',
+      name: o.name || '',
+      value: (o.value == null ? '' : String(o.value)).replace(/[\x00-\x1f\x7f]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300),
+      marks,
+      ai,
+      machine: !!(o.machine || o.machineMarks),
+      level: ai ? 'ai' : (o.machine || o.machineMarks ? 'machine' : 'meta'),
+    };
+  }
+
+  function finish(findings) {
+    const seen = new Set();
+    const out = [];
+    for (const f of findings) {
+      const k = f.level + '|' + f.path + '|' + f.name + '|' + f.value;
+      if (seen.has(k)) continue;
+      seen.add(k);
+      out.push(f);
+    }
+    const ai = out.filter((f) => f.ai).length;
+    const machine = out.filter((f) => f.machine).length;
+    return { findings: out, aiCount: ai, metaCount: out.length - ai - machine, machineCount: machine };
+  }
+
+  /* ---------------- filename leaks ---------------- */
+  function filenameHits(name) {
+    const marks = matchAi(name.replace(/[_-]+/g, ' '));
+    return marks;
+  }
+
+  /* ---------------- JPEG / EXIF / XMP ---------------- */
+  const EXIF_TAGS = {
+    0x0100: ['Image width', 1], 0x0101: ['Image height', 1],
+    0x010e: ['Image description', 2], 0x010f: ['Camera make', 2], 0x0110: ['Camera model', 2],
+    0x0112: ['Orientation', 1], 0x0131: ['Software', 2], 0x0132: ['Date/time', 2],
+    0x013b: ['Artist', 2], 0x8298: ['Copyright', 2], 0x9286: ['User comment', 2],
+    0x02bc: ['XMP packet', 2], 0x9003: ['Date/time original', 2], 0x9004: ['Date/time digitised', 2],
+    0xa430: ['Camera owner', 2], 0xa431: ['Serial number', 2], 0xa433: ['Lens make', 2], 0xa434: ['Lens model', 2],
+    0x8769: ['Exif sub-IFD', 0], 0x8825: ['GPS location', 0],
+  };
+  const GPS_TAGS = { 1: 'GPS latitude ref', 2: 'GPS latitude', 3: 'GPS longitude ref', 4: 'GPS longitude', 6: 'GPS altitude', 29: 'GPS date' };
+
+  function exifValue(u, tiff, entryOff) {
+    const type = be16(u, entryOff + 2);
+    const count = be32(u, entryOff + 4);
+    const sizeOf = { 1: 1, 2: 1, 3: 2, 4: 4, 5: 8, 6: 1, 7: 1, 8: 2, 9: 4, 10: 8, 11: 4, 12: 8 }[type] || 1;
+    const total = count * sizeOf;
+    const start = total <= 4 ? entryOff + 8 : tiff + be32(u, entryOff + 8);
+    if (start + total > u.length) return '';
+    if (type === 2) return latin1(u, start, start + count).replace(/\0+$/, '').trim();
+    if (type === 7) {
+      const head = latin1(u, start, start + 8);
+      if (/^ASCII/i.test(head)) return latin1(u, start + 8, start + total).replace(/\0+$/, '').trim();
+      return strings(u.subarray(start, start + total), { min: 4, cap: 4 }).join(' | ');
+    }
+    if (type === 1 || type === 6) return '0x' + latin1(u, start, start + Math.min(total, 8)).split('').map((c) => c.charCodeAt(0).toString(16)).join(' ');
+    if (type === 3) return Array.from({ length: Math.min(count, 6) }, (_, i) => be16(u, start + i * 2)).join(', ');
+    if (type === 4) return Array.from({ length: Math.min(count, 6) }, (_, i) => be32(u, start + i * 4)).join(', ');
+    if (type === 5) return Array.from({ length: Math.min(count, 4) }, (_, i) => `${be32(u, start + i * 8)}/${be32(u, start + i * 8 + 4)}`).join(', ');
+    return '';
+  }
+
+  function parseTiff(u, tiff, where, path) {
+    const out = [];
+    if (tiff + 8 > u.length) return out;
+    const order = latin1(u, tiff, tiff + 2);
+    if (order !== 'II' && order !== 'MM') return out;
+    const r16 = order === 'II' ? (o) => u[o] | (u[o + 1] << 8) : (o) => be16(u, o);
+    const r32 = order === 'II' ? (o) => le32(u, o) : (o) => be32(u, o);
+    const seen = new Set();
+    let guard = 0;
+    const queue = [[r32(tiff + 4), '']];
+    while (queue.length && guard++ < 24) {
+      const [ifdOff, label] = queue.shift();
+      if (!ifdOff || seen.has(ifdOff) || tiff + ifdOff + 2 > u.length) continue;
+      seen.add(ifdOff);
+      const n = r16(tiff + ifdOff);
+      for (let i = 0; i < n; i++) {
+        const eo = tiff + ifdOff + 2 + i * 12;
+        if (eo + 12 > u.length) break;
+        const tag = r16(eo);
+        const info = EXIF_TAGS[tag];
+        if (tag === 0x8769) { queue.push([r32(eo + 8), 'exif']); continue; }
+        if (tag === 0x8825) { queue.push([r32(eo + 8), 'gps']); continue; }
+        if (label === 'gps') {
+          const gname = GPS_TAGS[tag];
+          if (gname) out.push(finding({ where, path: path + '/gps', name: gname, value: exifValue(u, tiff, eo) }));
+          continue;
+        }
+        if (!info) continue;
+        const val = exifValue(u, tiff, eo);
+        if (val === '') continue;
+        out.push(finding({ where, path: path + (label ? '/' + label : '') + '/' + info[0], name: info[0], value: val }));
+      }
+    }
+    return out;
+  }
+
+  function xmpFindings(text, where, path) {
+    const out = [];
+    const props = [];
+    let m;
+    const attr = /([A-Za-z_][\w.\-]*(?::[\w.\-]+)+)\s*=\s*"([^"]{0,400})"/g;
+    while ((m = attr.exec(text))) props.push([m[1], m[2]]);
+    const elem = /<([A-Za-z_][\w.\-]*:[\w.\-]+)[^>]*>([^<]{1,400})<\/\1>/g;
+    while ((m = elem.exec(text))) props.push([m[1], m[2]]);
+    const interesting = /tool|software|agent|sourcetype|digitalsource|creator|author|description|title|comment|prompt|keyword|label|generator|history/i;
+    for (const [k, v] of props) {
+      const marks = matchAi(k + ' ' + v);
+      if (!marks.length && !interesting.test(k)) continue;
+      out.push(finding({ where, path: path + '/' + k, name: k, value: v, marks, aiMarks: marks.length > 0 }));
+    }
+    // history entries (generation pipeline trail)
+    const hist = /stEvt:softwareAgent="([^"]{1,200})"/g;
+    while ((m = hist.exec(text))) out.push(finding({ where, path: path + '/stEvt:softwareAgent', name: 'History software agent', value: m[1] }));
+    if (/photoshop:TextLayers/i.test(text)) out.push(finding({ where, path: path + '/photoshop:TextLayers', name: 'Embedded text layers', value: 'base64 layer text present (can hold prompts)' }));
+    if (!out.length && text.trim()) out.push(finding({ where, path, name: where, value: text.trim().slice(0, 200) }));
+    return out;
+  }
+
+  function scanJpeg(u) {
+    const findings = [];
+    const notes = [];
+    let p = 2;
+    let icc = 0;
+    while (p + 4 <= u.length) {
+      if (u[p] !== 0xff) break;
+      const marker = u[p + 1];
+      if (marker === 0xd8 || marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) { p += 2; continue; }
+      if (marker === 0xda) break; // start of scan — entropy data follows
+      const size = be16(u, p + 2);
+      if (size < 2 || p + 2 + size > u.length) break;
+      const body = u.subarray(p + 4, p + 2 + size);
+      const path = '/' + marker.toString(16).toUpperCase();
+      if (marker === 0xe1) {
+        const head = latin1(body, 0, 6);
+        if (head.slice(0, 4) === 'Exif') findings.push(...parseTiff(u, p + 10, 'EXIF', path + '/exif'));
+        else if (latin1(body, 0, 29).indexOf('ns.adobe.com/xap') !== -1) findings.push(...xmpFindings(DEC8.decode(body), 'XMP', path + '/xmp'));
+        else findings.push(finding({ where: 'APP1', path, name: 'Unknown APP1 segment', value: strings(body, { min: 5, cap: 3 }).join(' | ') }));
+      } else if (marker === 0xe0) {
+        notes.push('JFIF header present');
+      } else if (marker === 0xe2) {
+        icc += 1;
+      } else if (marker === 0xeb) {
+        const head = latin1(body, 0, 4);
+        findings.push(finding({ where: 'C2PA', path, name: 'C2PA Content Credentials', value: provenanceText(body), ai: true }));
+      } else if (marker === 0xed) {
+        findings.push(finding({ where: 'Photoshop/IPTC', path, name: 'Photoshop IPTC block', value: strings(body, { min: 5, cap: 5 }).join(' | ') }));
+      } else if (marker === 0xee) {
+        findings.push(finding({ where: 'APP14', path, name: 'Adobe marker', value: strings(body, { min: 4, cap: 2 }).join(' | ') }));
+      } else if (marker === 0xfe) {
+        findings.push(finding({ where: 'JPEG comment', path, name: 'Comment', value: latin1(body, 0, Math.min(body.length, 250)) }));
+      }
+      p += 2 + size;
+    }
+    if (icc) findings.push(finding({ where: 'ICC', name: 'ICC colour profile', value: `${icc} chunk(s)`, ai: false }));
+    return { format: 'JPEG', findings, notes, container: 'JPEG segments' };
+  }
+
+  /* ---------------- PNG ---------------- */
+  async function inflate(u, raw) {
+    try {
+      const ds = new DecompressionStream(raw ? 'deflate-raw' : 'deflate');
+      const stream = new Blob([u]).stream().pipeThrough(ds);
+      return new Uint8Array(await new Response(stream).arrayBuffer());
+    } catch (e) {
+      return null;
+    }
+  }
+
+  const PNG_SKIP = new Set(['IDAT', 'IEND', 'PLTE', 'tRNS', 'IHDR', 'bKGD', 'sBIT', 'hIST', 'sPLT', 'pHYs', 'tIME', 'gAMA', 'cHRM', 'sRGB']);
+
+  async function scanPng(u) {
+    const findings = [];
+    const notes = [];
+    let p = 8;
+    const animated = /acTL/.test(latin1(u, 8, Math.min(u.length, 4096)));
+    while (p + 12 <= u.length) {
+      const len = be32(u, p);
+      const type = latin1(u, p + 4, p + 8);
+      if (p + 12 + len > u.length) break;
+      const body = u.subarray(p + 8, p + 8 + len);
+      const path = '/' + type;
+      if (type === 'tEXt') {
+        const zero = body.indexOf(0);
+        const key = latin1(body, 0, zero < 0 ? body.length : zero);
+        const val = zero < 0 ? '' : latin1(body, zero + 1, body.length);
+        findings.push(finding({ where: 'PNG tEXt', path, name: key, value: val, marks: matchAiKey(key), aiMarks: matchAiKey(key).length > 0 }));
+      } else if (type === 'zTXt') {
+        const zero = body.indexOf(0);
+        const key = latin1(body, 0, zero < 0 ? body.length : zero);
+        const data = zero < 0 ? null : await inflate(body.subarray(zero + 2));
+        const val = data ? DEC8.decode(data) : '(compressed)';
+        findings.push(finding({ where: 'PNG zTXt', path, name: key, value: val, marks: matchAiKey(key), aiMarks: matchAiKey(key).length > 0 }));
+      } else if (type === 'iTXt') {
+        const zero = body.indexOf(0);
+        const key = latin1(body, 0, zero < 0 ? body.length : zero);
+        const compressed = zero >= 0 && body[zero + 1] === 1;
+        let rest = zero < 0 ? body : body.subarray(zero + 3);
+        const sep = rest.indexOf(0);
+        rest = sep < 0 ? rest : rest.subarray(sep + 1);
+        const sep2 = rest.indexOf(0);
+        rest = sep2 < 0 ? rest : rest.subarray(sep2 + 1);
+        const data = compressed ? await inflate(rest, true) : rest;
+        const val = data ? DEC8.decode(data) : '(compressed)';
+        if (key === 'XML:com.adobe.xmp') findings.push(...xmpFindings(val, 'XMP', path));
+        else findings.push(finding({ where: 'PNG iTXt', path, name: key, value: val, marks: matchAiKey(key), aiMarks: matchAiKey(key).length > 0 }));
+      } else if (type === 'eXIf') {
+        findings.push(...parseTiff(u, p + 8, 'EXIF', path));
+      } else if (type === 'caBX') {
+        findings.push(finding({ where: 'C2PA', path, name: 'C2PA Content Credentials', value: provenanceText(body), ai: true }));
+      } else if (type === 'iCCP') {
+        findings.push(finding({ where: 'ICC', path, name: 'ICC colour profile', value: latin1(body, 0, Math.max(0, body.indexOf(0))) }));
+      } else if (type === 'tIME') {
+        findings.push(finding({ where: 'PNG tIME', path, name: 'Last modified', value: `${be16(body, 0)}-${body[2]}-${body[3]} ${body[4]}:${body[5]}:${body[6]}` }));
+      } else if (!PNG_SKIP.has(type) && type !== 'acTL' && type !== 'fcTL' && type !== 'fdAT') {
+        if (type !== 'gAMA' && type !== 'cHRM' && type !== 'sRGB' && type !== 'IHDR') notes.push('Extra chunk: ' + type);
+      }
+      p += 12 + len;
+      if (type === 'IEND') break;
+    }
+    if (animated) notes.push('Animated PNG — the cleaned file keeps the first frame as a still');
+    return { format: 'PNG', findings, notes };
+  }
+
+  /* ---------------- WebP ---------------- */
+  function scanWebp(u) {
+    const findings = [];
+    const notes = [];
+    let p = 12;
+    while (p + 8 <= u.length) {
+      const type = latin1(u, p, p + 4);
+      const len = le32(u, p + 4);
+      if (p + 8 + len > u.length) break;
+      const body = u.subarray(p + 8, p + 8 + len);
+      const path = '/WEBP:' + type.trim();
+      if (type === 'EXIF') {
+        const head = latin1(body, 0, 4) === 'Exif' ? p + 14 : p + 8;
+        findings.push(...parseTiff(u, head, 'EXIF', path));
+      } else if (type === 'XMP ') {
+        findings.push(...xmpFindings(DEC8.decode(body), 'XMP', path));
+      } else if (type === 'ICCP') {
+        const zero = body.indexOf(0);
+        findings.push(finding({ where: 'ICC', path, name: 'ICC colour profile', value: latin1(body, 0, zero < 0 ? 20 : zero) }));
+      } else if (type === 'VP8X') {
+        const flags = body[0];
+        if (flags & 0x08) notes.push('EXIF flag set in VP8X');
+        if (flags & 0x04) notes.push('XMP flag set in VP8X');
+        if (flags & 0x02) notes.push('Animated WebP — the cleaned file keeps the first frame as a still');
+      } else if (type === 'ANIM' || type === 'ANMF') {
+        if (!notes.some((n) => n.indexOf('Animated') === 0)) notes.push('Animated WebP — the cleaned file keeps the first frame as a still');
+      }
+      p += 8 + len + (len % 2);
+    }
+    return { format: 'WebP', findings, notes };
+  }
+
+  function scanBmp(u) {
+    const findings = [];
+    const notes = ['BMP carries no metadata container'];
+    const off = le32(u, 10);
+    if (off >= 14) {
+      const size = le32(u, 14);
+      if (size >= 40) findings.push(finding({ where: 'DIB header', name: 'Resolution', value: `${s32(u, 18)}×${s32(u, 22)} px` }));
+    }
+    return { format: 'BMP', findings, notes };
+  }
+
+  /* ---------------- ISO BMFF (MP4 / MOV / M4V) ---------------- */
+  const UUID_XMP = 'be7acfcb97a942e89c71999491e3afac';
+  const UUID_C2PA = 'd8fec3d61b0e483c92975828877ec481';
+
+  function uuidHex(u, o) {
+    return Array.from(u.subarray(o, o + 16)).map((b) => b.toString(16).padStart(2, '0')).join('');
+  }
+  function uuidPretty(hex) {
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+  }
+
+  function readBoxes(u, start, end) {
+    const out = [];
+    let p = start;
+    while (p + 8 <= end) {
+      let size = be32(u, p);
+      let header = 8;
+      if (size === 1) {
+        if (p + 16 > end) break;
+        size = be64(u, p + 8);
+        header = 16;
+      } else if (size === 0) {
+        size = end - p;
+      }
+      if (size < header || p + size > end) break;
+      out.push({ type: latin1(u, p + 4, p + 8), start: p, header, size, end: p + size });
+      p += size;
+    }
+    return out;
+  }
+
+  const MOOV_CONTAINERS = new Set(['moov', 'trak', 'mdia', 'minf', 'stbl', 'edts', 'mvex', 'tref', 'udta', 'dinf']);
+  const DROP_ANYWHERE = new Set(['udta', 'meta', 'uuid', 'free', 'skip', 'wide']);
+  const DROP_TOP = new Set(['udta', 'meta', 'uuid', 'free', 'skip', 'wide', 'emsg', 'pdin']);
+
+  // QuickTime udta child atom value: [u16 size][u16 lang][text]
+  function qtAtomValue(u, box) {
+    const body = u.subarray(box.start + box.header, box.end);
+    if (body.length > 4) {
+      const sz = be16(body, 0);
+      const txt = DEC8.decode(body.subarray(4));
+      if (sz >= 8 && sz <= body.length && txt.replace(/[^\x20-\x7e]/g, '').length >= sz - 6) return txt.replace(/\0+$/, '').trim();
+    }
+    const s = strings(body, { min: 4, cap: 4 });
+    return s.length ? s.join(' | ') : latin1(body, 0, Math.min(body.length, 60)).replace(/\0+$/, '');
+  }
+
+  const QT_NAMES = {
+    '©nam': 'Title', '©too': 'Encoder / generator', '©day': 'Creation date', '©swr': 'Encoding software',
+    '©xyz': 'GPS location', '©mak': 'Manufacturer', '©mod': 'Model', '©cmt': 'Comment', '©des': 'Description',
+    '©cpy': 'Copyright', '©aut': 'Author', '©alb': 'Album', '©gen': 'Genre', '©enc': 'Encoded by',
+    '©ART': 'Artist', '©lyr': 'Lyrics', '©inf': 'Information', '©wrk': 'Work', 'loci': 'GPS location',
+    'chpl': 'Chapter list', 'auth': 'Author', 'titl': 'Title', 'dscp': 'Description', 'cprt': 'Copyright',
+    'albm': 'Album', 'kywd': 'Keywords', 'rtng': 'Rating', 'clsf': 'Classification', 'yrrc': 'Year',
+  };
+
+  // iTunes/QuickTime metadata list: `keys` (mdta) names + `ilst` items
+  function ilstItems(u, metaBodyStart, metaBodyEnd) {
+    const out = [];
+    const kids = readBoxes(u, metaBodyStart, metaBodyEnd);
+    const keys = [];
+    const keysBox = kids.find((b) => b.type === 'keys');
+    if (keysBox) {
+      const count = be32(u, keysBox.start + keysBox.header + 4);
+      let p = keysBox.start + keysBox.header + 8;
+      for (let i = 0; i < count && p + 8 <= keysBox.end; i++) {
+        const size = be32(u, p);
+        if (size < 8 || p + size > keysBox.end) break;
+        keys.push(latin1(u, p + 8, p + size).replace(/\0+$/, ''));
+        p += size;
+      }
+    }
+    for (const b of kids) {
+      if (b.type !== 'ilst') continue;
+      for (const item of readBoxes(u, b.start + b.header, b.end)) {
+        let name = item.type;
+        const idx = item.type.charCodeAt(0) === 0 ? be32(enc8(item.type), 0) : null;
+        if (idx != null && keys[idx - 1]) name = keys[idx - 1]; // mdta keys are referenced 1-based
+        else if (QT_NAMES[item.type]) name = QT_NAMES[item.type];
+        else if (idx != null && keys[idx]) name = keys[idx];
+        else if (idx != null) name = `key #${idx}`;
+        let value = '';
+        for (const d of readBoxes(u, item.start + item.header, item.end)) {
+          if (d.type !== 'data') continue;
+          const kind = be32(u, d.start + d.header);
+          const payload = u.subarray(d.start + d.header + 8, d.end);
+          if (kind === 1) value = DEC8.decode(payload);
+          else if (kind === 2) value = DEC16.decode(payload);
+          else if (kind === 21 || kind === 22) value = String(s32(payload, 0));
+          else value = strings(payload, { min: 3, cap: 3 }).join(' | ') || `(${payload.length} bytes, type ${kind})`;
+        }
+        out.push({ name, value, raw: item.type });
+      }
+    }
+    return out;
+  }
+
+  // 3GPP `loci`: country/language, name, role, fixed-point lon/lat/alt, astronomical body
+  function lociText(u, box) {
+    const b = u.subarray(box.start + box.header, box.end);
+    let p = 6;
+    const str = () => { let s = ''; while (p < b.length && b[p] !== 0) s += String.fromCharCode(b[p++]); p += 1; return s; };
+    const place = str();
+    if (p + 13 > b.length) return place || strings(b, { min: 3, cap: 3 }).join(' | ');
+    p += 1;
+    const dv = new DataView(b.buffer, b.byteOffset);
+    const lon = dv.getInt32(p) / 65536, lat = dv.getInt32(p + 4) / 65536, alt = dv.getInt32(p + 8) / 65536;
+    p += 12;
+    const body = str();
+    return `${lat.toFixed(5)}, ${lon.toFixed(5)}${alt ? ' (±' + alt.toFixed(1) + ' m)' : ''}${body && !/^earth$/i.test(body) ? ' on ' + body : ''}${place ? ' — ' + place : ''}`;
+  }
+
+  function analyseVideo(u) {
+    const findings = [];
+    const notes = [];
+    const drops = [];
+    let brand = '';
+    let compatibles = '';
+    let hasMoof = false;
+    let hasMfra = false;
+    let hasSidx = false;
+    let baseDataOffset = false;
+    let externalRef = false;
+
+    const top = readBoxes(u, 0, u.length);
+    if (!top.length) throw new Error('Not a readable MP4/MOV container');
+
+    const addDrop = (box, label) => drops.push({ start: box.start, end: box.end, type: box.type, label, size: box.size });
+
+    for (const b of top) {
+      if (b.type === 'ftyp') {
+        brand = latin1(u, b.start + 8, b.start + 12);
+        compatibles = latin1(u, b.start + 16, b.start + Math.min(b.end, b.start + 40)).trim();
+        findings.push(finding({ where: 'ftyp', path: '/ftyp', name: 'Container brand', value: `${brand.trim()} (${compatibles})` }));
+      } else if (b.type === 'moof') { hasMoof = true; }
+      else if (b.type === 'mfra') { hasMfra = true; }
+      else if (b.type === 'sidx') { hasSidx = true; }
+      else if (b.type === 'emsg') {
+        const payload = u.subarray(b.start + b.header, b.end);
+        const vf = be32(u, b.start + b.header);
+        let q = b.header + 4;
+        const readC = () => { let s = ''; while (q < b.size && u[b.start + q] !== 0) s += String.fromCharCode(u[b.start + q++]); q += 1; return s; };
+        const scheme = readC();
+        const value = readC();
+        const ai = /c2pa|merkle/i.test(scheme + ' ' + value + ' ' + provenanceText(payload));
+        findings.push(finding({ where: 'Timed metadata (emsg)', path: '/emsg', name: ai ? 'C2PA event message' : 'Event message', value: [scheme, value].filter(Boolean).join(' ') + ' — ' + provenanceText(payload), ai }));
+        addDrop(b, 'emsg (timed metadata)');
+      } else if (b.type === 'meta') {
+        findings.push(finding({ where: 'Top-level meta', path: '/meta', name: 'Metadata container', value: strings(u.subarray(b.start + b.header, b.end), { min: 5, cap: 6 }).join(' | ') }));
+        addDrop(b, 'top-level meta box');
+      } else if (b.type === 'uuid') {
+        const hex = uuidHex(u, b.start + b.header);
+        const payload = u.subarray(b.start + b.header + 16, b.end);
+        const strs = strings(payload, { min: 5, cap: 6 });
+        if (hex === UUID_XMP) {
+          findings.push(finding({ where: 'XMP (uuid)', path: '/uuid(' + uuidPretty(hex) + ')', name: 'XMP metadata', value: provenanceText(payload) }));
+        } else if (hex === UUID_C2PA) {
+          findings.push(finding({ where: 'C2PA (uuid)', path: '/uuid(' + uuidPretty(hex) + ')', name: 'C2PA Content Credentials', value: provenanceText(payload), ai: true }));
+        } else {
+          findings.push(finding({ where: 'uuid box', path: '/uuid(' + uuidPretty(hex) + ')', name: 'Vendor uuid box', value: provenanceText(payload) }));
+        }
+        addDrop(b, 'uuid metadata box');
+      } else if (b.type === 'free' || b.type === 'skip' || b.type === 'wide') {
+        addDrop(b, 'padding');
+      }
+    }
+
+    const moov = top.find((b) => b.type === 'moov');
+    if (!moov) throw new Error('No moov box — file is not a complete MP4/MOV');
+
+    const readMetaBox = (box, path) => {
+      const items = ilstItems(u, box.start + box.header + 4, box.end);
+      for (const it of items) {
+        findings.push(finding({ where: 'MP4 metadata list', path: path + '/ilst/' + it.name, name: it.name, value: it.value, marks: matchAiKey(it.name) }));
+      }
+      if (!items.length) {
+        const strs = strings(u.subarray(box.start + box.header, box.end), { min: 6, cap: 6 }).filter((s) => !/^(mdta|ilst|keys|data|hdlr|free)$/.test(s));
+        if (strs.length) findings.push(finding({ where: 'MP4 meta box', path, name: 'Metadata', value: strs.join(' | ') }));
+      }
+    };
+    const readUdta = (box, path) => {
+      for (const child of readBoxes(u, box.start + box.header, box.end)) {
+        if (child.type === 'meta') { readMetaBox(child, path + '/meta'); continue; }
+        const gps = child.type === '©xyz' || child.type === 'loci' || child.type === '©loc';
+        const name = gps ? 'GPS location (' + child.type + ')' : (QT_NAMES[child.type] || child.type);
+        const value = child.type === 'loci' ? lociText(u, child) : qtAtomValue(u, child);
+        findings.push(finding({ where: 'MP4 user data', path: path + '/' + child.type, name, value, marks: gps ? ['GPS coordinates embedded'] : [] }));
+      }
+    };
+
+    // recursive walk of moov, dropping metadata containers wherever they sit
+    const walk = (start, end, path) => {
+      for (const b of readBoxes(u, start, end)) {
+        const t = b.type;
+        if (t === 'udta') {
+          readUdta(b, path + '/udta');
+          addDrop(b, 'user data (udta)');
+          continue;
+        }
+        if (t === 'meta') {
+          readMetaBox(b, path + '/meta');
+          addDrop(b, 'metadata container (meta)');
+          continue;
+        }
+        if (t === 'uuid') {
+          const hex = uuidHex(u, b.start + b.header);
+          const payload = u.subarray(b.start + b.header + 16, b.end);
+          const strs = strings(payload, { min: 5, cap: 5 });
+          const known = hex === UUID_XMP ? 'XMP metadata' : hex === UUID_C2PA ? 'C2PA Content Credentials' : 'Vendor uuid box';
+          findings.push(finding({ where: 'uuid (in moov)', path: path + '/uuid(' + uuidPretty(hex) + ')', name: known, value: provenanceText(payload), ai: hex === UUID_C2PA }));
+          addDrop(b, 'uuid metadata box');
+          continue;
+        }
+        if (t === 'free' || t === 'skip' || t === 'wide') { addDrop(b, 'padding'); continue; }
+        if (t === 'stco' || t === 'co64') continue;
+        if (t === 'traf') {
+          for (const tb of readBoxes(u, b.start + b.header, b.end)) {
+            if (tb.type === 'tfhd' && (be32(u, tb.start + tb.header) & 0x000001)) baseDataOffset = true;
+          }
+        }
+        if (t === 'dinf') {
+          for (const db of readBoxes(u, b.start + b.header, b.end)) {
+            if (db.type !== 'dref') continue;
+            for (const e of readBoxes(u, db.start + db.header + 8, db.end)) {
+              const flags = be32(u, e.start + e.header) & 0xffffff;
+              if (e.type !== 'url ' || !(flags & 1)) externalRef = true;
+            }
+          }
+        }
+        if (MOOV_CONTAINERS.has(t)) walk(b.start + b.header, b.end, path + '/' + t);
+      }
+    };
+    walk(moov.start + moov.header, moov.end, '/moov');
+
+    // ---- deep clean: what identifies the encoder inside the streams themselves ----
+    const targets = [];
+    const deepLabels = [];
+    const deepNotes = [];
+    let codec = '';
+    let deepSupported = false;
+    const childOf = (box, type) => readBoxes(u, box.start + box.header, box.end).find((b) => b.type === type);
+    const descend = (box, path) => { let cur = box; for (const t of path) { cur = childOf(cur, t); if (!cur) return null; } return cur; };
+    const mdatBox = top.find((b) => b.type === 'mdat');
+    // identification strings only ever sit at the head of a stream: bound the work
+    const probeEnd = mdatBox ? Math.min(mdatBox.end, mdatBox.start + 8 * 1024 * 1024) : Math.min(u.length, 8 * 1024 * 1024);
+    const probeHasId = mdatBox ? identificationIn(u.subarray(mdatBox.start, probeEnd)).length > 0 : false;
+    for (const trak of readBoxes(u, moov.start + moov.header, moov.end).filter((b) => b.type === 'trak')) {
+      const mdia = childOf(trak, 'mdia');
+      if (!mdia) continue;
+      const hdlr = childOf(mdia, 'hdlr');
+      const handler = hdlr ? latin1(u, hdlr.start + hdlr.header + 8, hdlr.start + hdlr.header + 12) : '';
+      const stbl = descend(trak, ['mdia', 'minf', 'stbl']);
+      const stsd = stbl ? childOf(stbl, 'stsd') : null;
+      const entry = stsd ? readBoxes(u, stsd.start + stsd.header + 8, stsd.end)[0] : null;
+      if (!entry) continue;
+      if (handler === 'vide') {
+        codec = entry.type;
+        const cn = entry.start + 50; // VisualSampleEntry compressorname (32-byte pascal string)
+        const nameLen = Math.min(u[cn] || 0, 31);
+        const name = nameLen ? latin1(u, cn + 1, cn + 1 + nameLen).replace(/\0.*$/, '') : '';
+        if (name) {
+          targets.push({ start: cn, end: cn + 32, label: 'sample-description compressor name' });
+          findings.push(finding({ where: 'stsd', path: '/moov/trak/mdia/minf/stbl/stsd/' + entry.type, name: 'Sample entry compressor name', value: name, marks: matchAi(name), machine: true }));
+          deepLabels.push('compressor name in the sample description ("' + name + '")');
+        }
+        const isHevc = entry.type === 'hvc1' || entry.type === 'hev1';
+        const isAvc = entry.type === 'avc1' || entry.type === 'avc3';
+        if (isAvc || isHevc) {
+          // a VisualSampleEntry has a 78-byte fixed body before its child boxes,
+        // so readBoxes() on the entry header finds nothing — offset past it
+        const cfgBox = readBoxes(u, entry.start + entry.header + 78, entry.end).find((b) => b.type === (isHevc ? 'hvcC' : 'avcC'));
+          if (!cfgBox) deepNotes.push('codec configuration box missing — video stream left untouched');
+          else if (probeHasId) {
+            const nalLenSize = ((isHevc ? u[cfgBox.start + cfgBox.header + 21] : u[cfgBox.start + cfgBox.header + 4]) & 3) + 1;
+            configSeiTargets(u, cfgBox, isHevc, targets, findings, deepLabels);
+            const index = mediaIndex(u, stbl);
+            let ranges = index ? sampleRanges(index) : fragmentSamples(u, top, trakId(u, trak));
+            if (!ranges.length) deepNotes.push('could not locate the encoded samples in this container — video stream left untouched');
+            else {
+              ranges = ranges.slice(0, 20000);
+              for (const r of ranges) seiTargets(u, r.start, Math.min(r.start + r.size, u.length), nalLenSize, isHevc, targets, findings, deepLabels);
+              deepSupported = true;
+            }
+          } else {
+            deepSupported = true;
+            deepNotes.push('no encoder identification found inside the video stream');
+          }
+        } else {
+          deepNotes.push(entry.type + ' video stream: CleanSlate does not rewrite this bitstream (' + (entry.type === 'av01' ? 'AV1' : entry.type === 'vp09' ? 'VP9' : entry.type) + ') — container metadata is still removed');
+        }
+      } else if (handler === 'soun') {
+        if (entry.type === 'mp4a' && probeHasId) {
+          const index = mediaIndex(u, stbl);
+          const ranges = (index ? sampleRanges(index) : fragmentSamples(u, top, trakId(u, trak))).slice(0, 20000);
+          for (const r of ranges) aacTargets(u, r.start, Math.min(r.start + r.size, u.length), targets, findings, deepLabels);
+          deepSupported = true;
+        } else if (entry.type === 'mp4a') {
+          deepSupported = true;
+          deepNotes.push('no encoder identification found inside the audio stream');
+        } else {
+          deepNotes.push(entry.type + ' audio stream: bitstream not rewritten — container metadata is still removed');
+        }
+      }
+    }
+    if (targets.length) deepSupported = true;
+
+    // mode decision
+    let mode = 'rewrite';
+    let modeReason = 'metadata removed and the file compacted';
+    if (hasMoof || hasMfra) { mode = 'pad'; modeReason = 'fragmented file — metadata neutralised in place to keep segment offsets valid'; }
+    else if (hasSidx) { mode = 'pad'; modeReason = 'stream index (sidx) present — metadata neutralised in place to keep index offsets valid'; }
+    else if (baseDataOffset) { mode = 'pad'; modeReason = 'track fragment base offsets present — metadata neutralised in place'; }
+    else if (externalRef) { mode = 'pad'; modeReason = 'external media reference — metadata neutralised in place'; }
+    if (hasMoof) notes.push('Fragmented (streaming) file: metadata is overwritten rather than removed, so the file keeps its size.');
+    if (externalRef) notes.push('This file references media outside the container — CleanSlate left the stream structure untouched.');
+
+    const res = finish(findings);
+    const tree = parseLevel(u, 0, u.length, false);
+    return {
+      kind: 'video',
+      tree,
+      format: brand.trim() === 'qt' ? 'MOV' : (brand.trim() === 'm4v' ? 'M4V' : 'MP4'),
+      brand: brand.trim(),
+      findings: res.findings,
+      aiCount: res.aiCount,
+      machineCount: res.machineCount,
+      metaCount: res.metaCount,
+      drops,
+      dropBytes: drops.filter((d) => d.label !== 'padding').reduce((a, d) => a + d.size, 0),
+      paddingBytes: drops.filter((d) => d.label === 'padding').reduce((a, d) => a + d.size, 0),
+      mode,
+      modeReason,
+      notes: notes.concat(deepNotes),
+      codec,
+      deepSupported,
+      targets,
+      deepLabels,
+      size: u.length,
+    };
+  }
+
+  // ---- lossless rewriting ----
+  // Containers we are allowed to descend into. Anything else is copied byte for
+  // byte, so an unknown box can never be damaged by us.
+  const RECURSE_BOXES = new Set(['moov', 'trak', 'mdia', 'minf', 'stbl', 'edts', 'mvex', 'dinf', 'tref', 'iprp', 'ipco', 'moof', 'traf']);
+
+  function parseLevel(u, start, end, nested) {
+    const nodes = [];
+    for (const b of readBoxes(u, start, end)) {
+      const dropSet = nested ? DROP_ANYWHERE : DROP_TOP;
+      const node = { type: b.type, start: b.start, header: b.header, size: b.size, end: b.end, drop: dropSet.has(b.type), extra: 0, children: null };
+      if (!node.drop && (RECURSE_BOXES.has(node.type) || node.type === 'meta')) {
+        node.extra = node.type === 'meta' ? 4 : 0; // meta is a FullBox
+        node.children = parseLevel(u, b.start + b.header + node.extra, b.end, true);
+      }
+      nodes.push(node);
+    }
+    return nodes;
+  }
+
+  function plannedSize(node) {
+    if (node.drop) return 0;
+    if (!node.children) return node.size;
+    let n = node.header + node.extra;
+    for (const c of node.children) n += plannedSize(c);
+    return n;
+  }
+
+  function writeBoxSize(out, pos, header, size) {
+    if (header === 16) new DataView(out.buffer, out.byteOffset + pos + 8, 8).setBigUint64(0, BigInt(size));
+    else new DataView(out.buffer, out.byteOffset + pos, 4).setUint32(0, size);
+  }
+
+  function emitNode(u, node, out, pos, segs) {
+    if (node.drop) return pos;
+    const size = plannedSize(node);
+    const header = Math.min(node.header, node.end - node.start);
+    out.set(u.subarray(node.start, node.start + header), pos);
+    if (size !== node.size) writeBoxSize(out, pos, header, size);
+    if (node.children) {
+      if (node.extra) out.set(u.subarray(node.start + header, node.start + header + node.extra), pos + header);
+      let p = pos + header + node.extra;
+      for (const c of node.children) p = emitNode(u, c, out, p, segs);
+      return pos + size;
+    }
+    out.set(u.subarray(node.start + header, node.end), pos + header);
+    segs.push({ oldStart: node.start, oldEnd: node.end, newStart: pos, newEnd: pos + size });
+    return pos + size;
+  }
+
+  // map an original file offset onto the compacted layout; only byte-identical
+  // leaf copies are mappable, which is exactly what chunk offsets point into
+  function findSeg(segs, off) {
+    for (const s of segs) if (off >= s.oldStart && off < s.oldEnd) return s;
+    return null;
+  }
+
+  function freeBoxOf(length) {
+    const b = new Uint8Array(length);
+    b[0] = (length >>> 24) & 0xff; b[1] = (length >>> 16) & 0xff; b[2] = (length >>> 8) & 0xff; b[3] = length & 0xff;
+    b[4] = 0x66; b[5] = 0x72; b[6] = 0x65; b[7] = 0x65; // 'free'
+    return b;
+  }
+
+  function mergeRanges(ranges) {
+    const sorted = [...ranges].sort((a, b) => a.start - b.start);
+    const merged = [];
+    for (const r of sorted) {
+      const last = merged[merged.length - 1];
+      if (last && r.start <= last.end) last.end = Math.max(last.end, r.end);
+      else merged.push({ start: r.start, end: r.end });
+    }
+    return merged;
+  }
+
+  // Rewrites the container with every metadata box removed. When the stream
+  // layout makes that unsafe (fragmented files, stream indexes, external media
+  // references, unmappable chunk offsets) the same boxes are overwritten in
+  // place with ignored padding instead — the metadata bytes are destroyed
+  // either way, the second route just keeps every offset in the file valid.
+  function stripVideo(u, analysis, opts) {
+    const forcePad = !!(opts && opts.forcePad);
+    const merged = mergeRanges(analysis.drops || []);
+    const padResult = (reason) => {
+      const out = new Uint8Array(u);
+      for (const r of merged) {
+        const len = r.end - r.start;
+        if (len >= 8) out.set(freeBoxOf(len), r.start);
+        else out.fill(0, r.start, r.end);
+      }
+      return { bytes: out, mode: 'pad', method: 'metadata overwritten with ignored padding', sizeBefore: u.length, sizeAfter: u.length, removedBytes: merged.reduce((a, r) => a + (r.end - r.start), 0), reason, ranges: merged };
+    };
+    if (forcePad || analysis.mode === 'pad') return padResult(analysis.modeReason || 'layout requires in-place neutralisation');
+
+    const nodes = analysis.tree || [];
+    const total = nodes.reduce((a, n) => a + plannedSize(n), 0);
+    if (total >= u.length) return padResult('nothing removable in this container');
+    const out = new Uint8Array(total);
+    const segs = [];
+    let pos = 0;
+    for (const n of nodes) pos = emitNode(u, n, out, pos, segs);
+
+    let unmappable = null;
+    const patchLevel = (start, end) => {
+      for (const b of readBoxes(out, start, end)) {
+        if (unmappable) return;
+        if (b.type === 'stco' || b.type === 'co64') {
+          const width = b.type === 'stco' ? 4 : 8;
+          const count = be32(out, b.start + b.header + 4);
+          for (let i = 0; i < count; i++) {
+            const at = b.start + b.header + 8 + i * width;
+            const dv = new DataView(out.buffer, out.byteOffset + at, width);
+            const val = width === 4 ? dv.getUint32(0) : Number(dv.getBigUint64(0));
+            if (!val) continue;
+            const seg = findSeg(segs, val);
+            if (!seg) { unmappable = `chunk offset ${val} lands outside copied data`; return; }
+            const next = seg.newStart + (val - seg.oldStart);
+            if (next > 0xffffffff) { unmappable = 'compacted offsets exceed 32-bit chunk offsets'; return; }
+            if (width === 4) dv.setUint32(0, next); else dv.setBigUint64(0, BigInt(next));
+          }
+        } else if (RECURSE_BOXES.has(b.type)) {
+          patchLevel(b.start + b.header, b.end);
+        }
+      }
+    };
+    patchLevel(0, out.length);
+    if (unmappable) return padResult(unmappable);
+    return { bytes: out, mode: 'rewrite', method: 'metadata removed and file compacted', sizeBefore: u.length, sizeAfter: total, removedBytes: u.length - total, ranges: merged };
+  }
+
+  /* ---------------- lossless image stripping (no re-encode, no pixel change) ---------------- */
+  function stripImageLossless(u, scan) {
+    const format = scan.format;
+    const removed = [];
+    const kept = [];
+    if (format === 'JPEG') {
+      const parts = [u.subarray(0, 2)];
+      let p = 2;
+      while (p + 4 <= u.length) {
+        if (u[p] !== 0xff) { parts.push(u.subarray(p)); break; }
+        const marker = u[p + 1];
+        if (marker === 0xda) { parts.push(u.subarray(p)); break; }
+        if (marker === 0xd8 || marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) { parts.push(u.subarray(p, p + 2)); p += 2; continue; }
+        const size = be16(u, p + 2);
+        if (size < 2 || p + 2 + size > u.length) { parts.push(u.subarray(p)); break; }
+        const seg = u.subarray(p, p + 2 + size);
+        const label = 'APP' + (marker - 0xe0) + (marker === 0xfe ? ' comment' : '');
+        const keep = marker === 0xe0 || marker === 0xe2 || marker === 0xee; // JFIF, ICC profile, Adobe colour transform
+        if (marker >= 0xe0 || marker === 0xfe) {
+          if (keep) { parts.push(seg); kept.push(label + ' (colour/format info)'); }
+          else { removed.push({ what: label, bytes: seg.length }); }
+        } else {
+          parts.push(seg);
+        }
+        p += 2 + size;
+      }
+      const out = new Uint8Array(parts.reduce((a, x) => a + x.length, 0));
+      let o = 0;
+      for (const part of parts) { out.set(part, o); o += part.length; }
+      return { bytes: out, removed, kept };
+    }
+    if (format === 'PNG') {
+      const DROP = new Set(['tEXt', 'zTXt', 'iTXt', 'eXIf', 'caBX', 'tIME']);
+      const parts = [u.subarray(0, 8)];
+      let p = 8;
+      while (p + 12 <= u.length) {
+        const len = be32(u, p);
+        const type = latin1(u, p + 4, p + 8);
+        if (p + 12 + len > u.length) break;
+        const chunk = u.subarray(p, p + 12 + len);
+        if (DROP.has(type)) removed.push({ what: 'PNG ' + type, bytes: chunk.length });
+        else if (type === 'iCCP' || type === 'sRGB' || type === 'gAMA' || type === 'cHRM') { parts.push(chunk); kept.push('PNG ' + type + ' (colour)'); }
+        else parts.push(chunk);
+        p += 12 + len;
+        if (type === 'IEND') break;
+      }
+      const out = new Uint8Array(parts.reduce((a, x) => a + x.length, 0));
+      let o = 0;
+      for (const part of parts) { out.set(part, o); o += part.length; }
+      return { bytes: out, removed, kept };
+    }
+    if (format === 'WebP') {
+      const parts = [];
+      const chunks = [];
+      let p = 12;
+      while (p + 8 <= u.length) {
+        const type = latin1(u, p, p + 4);
+        const len = le32(u, p + 4);
+        if (p + 8 + len > u.length) break;
+        chunks.push({ type, raw: u.subarray(p, p + 8 + len + (len % 2)), len });
+        p += 8 + len + (len % 2);
+      }
+      for (const c of chunks) {
+        if (c.type === 'EXIF' || c.type === 'XMP ') { removed.push({ what: 'WebP ' + c.type.trim(), bytes: c.raw.length }); continue; }
+        if (c.type === 'VP8X') {
+          const raw = new Uint8Array(c.raw);
+          raw[8] &= ~(0x08 | 0x04); // clear the EXIF and XMP flag bits
+          if (raw[8] & 0x0c) { /* keep other flags */ }
+          parts.push(raw);
+          if (raw.slice(8).every((b) => b === 0)) kept.push('WebP VP8X header (EXIF/XMP flags cleared)');
+          else kept.push('WebP VP8X header (EXIF/XMP flags cleared)');
+          continue;
+        }
+        if (c.type === 'ICCP') kept.push('WebP ICCP (colour)');
+        parts.push(c.raw);
+      }
+      const head = new Uint8Array(12);
+      head.set(enc8('RIFF'), 0);
+      head.set(enc8('WEBP'), 8);
+      const total = parts.reduce((a, x) => a + x.length, 0) + 12;
+      new DataView(head.buffer).setUint32(4, total - 8, true);
+      const out = new Uint8Array(total);
+      out.set(head, 0);
+      let o = 12;
+      for (const part of parts) { out.set(part, o); o += part.length; }
+      return { bytes: out, removed, kept };
+    }
+    return { bytes: new Uint8Array(u), removed, kept: ['no metadata container to strip'] };
+  }
+
+  /* ---------------- in-stream identification (deep clean) ---------------- */
+  const ID_PATTERNS = ['Lavc', 'Lavf', 'x264', 'x265', 'libx264', 'libx265', 'libaom', 'libvpx', 'SVT-AV1', 'svt-av1', 'libmp3lame', 'LAME', 'FFmpeg', 'ffmpeg', 'VideoLAN', 'HandBrake', 'Apple', 'Google', 'Options:', 'options:', 'cabac=', 'ref=', 'vbv_', 'rc_lookahead'];
+  function identificationIn(bytes) {
+    const text = latin1(bytes, 0, Math.min(bytes.length, 4096));
+    const hits = [];
+    for (const needle of ID_PATTERNS) if (text.indexOf(needle) !== -1) hits.push(needle);
+    return hits;
+  }
+
+  // SEI payloads of one NAL unit: type 5 is user_data_unregistered, which is where
+  // encoders write their name, version and settings string
+  function seiScanNal(u, nalStart, nalEnd, isHevc, out, findings, labels) {
+    const type = isHevc ? (u[nalStart] >> 1) & 0x3f : u[nalStart] & 0x1f;
+    const seiType = isHevc ? (type === 39 || type === 40) : type === 6;
+    if (seiType) {
+      {
+        let q = nalStart + (isHevc ? 2 : 1);
+        while (q + 1 < nalEnd) {
+          let pt = 0;
+          while (q < nalEnd && u[q] === 0xff) { pt += 255; q++; }
+          if (q >= nalEnd) break;
+          pt += u[q++];
+          let sz = 0;
+          while (q < nalEnd && u[q] === 0xff) { sz += 255; q++; }
+          if (q >= nalEnd) break;
+          sz += u[q++];
+          const payloadStart = q;
+          const payloadEnd = Math.min(q + sz, nalEnd);
+          if (pt === 5) {
+            const text = strings(u.subarray(payloadStart + 16, payloadEnd), { min: 5, cap: 3 }).join(' | ');
+            const hits = identificationIn(u.subarray(payloadStart, payloadEnd));
+            out.push({ start: payloadStart, end: payloadEnd, label: 'SEI user data (encoder identification)' });
+            if (text || hits.length) {
+              findings.push(finding({
+                where: 'video stream (SEI)',
+                path: '/mdat/video/SEI',
+                name: 'In-stream encoder identification',
+                value: (hits.length ? hits.join(' · ') + ' — ' : '') + text,
+                marks: matchAi(text),
+                machine: true,
+              }));
+              labels.push('x264/x265 SEI user data');
+            }
+          }
+          q = payloadEnd;
+        }
+      }
+    }
+  }
+
+  // walk a sample's length-prefixed NAL units
+  function seiTargets(u, sampleStart, sampleEnd, nalLenSize, isHevc, out, findings, labels) {
+    let p = sampleStart;
+    while (p + nalLenSize + 2 <= sampleEnd) {
+      let len = 0;
+      for (let i = 0; i < nalLenSize; i++) len = (len << 8) | u[p + i];
+      if (len <= 0 || p + nalLenSize + len > sampleEnd) break;
+      seiScanNal(u, p + nalLenSize, p + nalLenSize + len, isHevc, out, findings, labels);
+      p += nalLenSize + len;
+    }
+  }
+
+  // the codec configuration box also carries SEI NAL arrays (HEVC writes its
+  // version and options string there), so scan those too
+  function configSeiTargets(u, cfgBox, isHevc, out, findings, labels) {
+    let p = cfgBox.start + cfgBox.header + (isHevc ? 22 : 6);
+    if (p >= cfgBox.end) return;
+    if (isHevc) {
+      const numArrays = u[p++];
+      for (let i = 0; i < numArrays && p + 3 <= cfgBox.end; i++) {
+        const nalType = u[p] & 0x3f;
+        p += 1;
+        const num = be16(u, p);
+        p += 2;
+        for (let j = 0; j < num && p + 2 <= cfgBox.end; j++) {
+          const len = be16(u, p);
+          p += 2;
+          if (len <= 0 || p + len > cfgBox.end) return;
+          if (nalType === 39 || nalType === 40) seiScanNal(u, p, p + len, true, out, findings, labels);
+          p += len;
+        }
+      }
+    } else {
+      const numSps = u[p++] & 0x1f;
+      for (let i = 0; i < numSps && p + 2 <= cfgBox.end; i++) { const len = be16(u, p); p += 2 + len; }
+      if (p >= cfgBox.end) return;
+      const numPps = u[p++];
+      for (let i = 0; i < numPps && p + 2 <= cfgBox.end; i++) { const len = be16(u, p); p += 2 + len; }
+    }
+  }
+
+  // AAC identification lives in ignorable fill/data-stream elements. The encoder
+  // header sits 1-3 bytes before the text (count nibble, optional extension type,
+  // sometimes a length byte), so accept any of those layouts and rely on the tests
+  // (decoded-audio md5) to prove the audio stream is unharmed.
+  function aacTargets(u, sampleStart, sampleEnd, out, findings, labels) {
+    const text = latin1(u, sampleStart, sampleEnd);
+    for (const needle of ID_PATTERNS) {
+      let idx = text.indexOf(needle);
+      while (idx !== -1) {
+        const at = sampleStart + idx;
+        let run = 0;
+        while (at + run < sampleEnd && u[at + run] >= 0x20 && u[at + run] < 0x7f) run++;
+        let header = null;
+        for (let back = 1; back <= 3 && at - back >= sampleStart; back++) {
+          const b = u[at - back];
+          const id = b >> 5;
+          if ((id === 6 || id === 4) && !header) header = { back, byte: b, count: b & 0x0f };
+        }
+        let plausible = false;
+        if (header) {
+          if (header.count === 15) plausible = true; // escaped count
+          else if (header.back <= 2) plausible = Math.abs(header.count - run) <= 3 || header.count === 0;
+          else plausible = run >= 6;
+        }
+        if (plausible && run >= 4) {
+          out.push({ start: at, end: at + run, label: 'audio fill element (encoder identification)' });
+          findings.push(finding({
+            where: 'audio stream (AAC fill)',
+            path: '/mdat/audio/fill',
+            name: 'In-stream encoder identification',
+            value: needle + ' — ' + latin1(u, at, Math.min(at + run, at + 40)),
+            marks: matchAi(latin1(u, at, at + run)),
+            machine: true,
+          }));
+          labels.push('AAC fill-element identification');
+        }
+        idx = text.indexOf(needle, idx + 1);
+      }
+    }
+  }
+
+  // sample index for a trak: chunk offsets + sample sizes
+  function mediaIndex(u, stbl) {
+    if (!stbl) return null;
+    const kids = readBoxes(u, stbl.start + stbl.header, stbl.end);
+    const findKid = (t) => kids.find((k) => k.type === t);
+    const stsz = findKid('stsz');
+    const stco = findKid('stco') || findKid('co64');
+    const stsc = findKid('stsc');
+    if (!stsz || !stco || !stsc) return null;
+    if (findKid('stz2')) return null; // compact sample sizes: not handled
+    const fixed = be32(u, stsz.start + stsz.header + 4);
+    const count = be32(u, stsz.start + stsz.header + 8);
+    const sizes = new Array(count);
+    for (let i = 0; i < count; i++) sizes[i] = fixed || be32(u, stsz.start + stsz.header + 12 + i * 4);
+    const entries = [];
+    const n = be32(u, stsc.start + stsc.header + 4);
+    for (let i = 0; i < n; i++) {
+      const o = stsc.start + stsc.header + 8 + i * 12;
+      entries.push({ first: be32(u, o), perChunk: be32(u, o + 4) });
+    }
+    const nChunks = be32(u, stco.start + stco.header + 4);
+    const co64 = stco.type === 'co64';
+    const chunks = [];
+    let sample = 0;
+    for (let c = 1; c <= nChunks; c++) {
+      let perChunk = entries.length ? entries[0].perChunk : 0;
+      for (const e of entries) if (c >= e.first) perChunk = e.perChunk;
+      const off = co64 ? be64(u, stco.start + stco.header + 8 + (c - 1) * 8) : be32(u, stco.start + stco.header + 8 + (c - 1) * 4);
+      const idxs = [];
+      for (let k = 0; k < perChunk && sample < count; k++) idxs.push(sample++);
+      chunks.push({ offset: off, samples: idxs });
+    }
+    if (!chunks.length) return null; // fragmented: the samples live in moof/trun instead
+    return { sizes, chunks, count };
+  }
+
+  // track_ID for a trak (tkhd), so fragment headers can be matched back to it
+  function trakId(u, trak) {
+    const tkhd = readBoxes(u, trak.start + trak.header, trak.end).find((b) => b.type === 'tkhd');
+    if (!tkhd) return -1;
+    const version = u[tkhd.start + tkhd.header];
+    return be32(u, tkhd.start + tkhd.header + 4 + (version === 1 ? 16 : 8));
+  }
+
+  // fragmented files carry their samples in moof/traf/trun, not in the stbl tables
+  function fragmentSamples(u, top, trackId) {
+    const out = [];
+    for (const moof of top.filter((b) => b.type === 'moof')) {
+      for (const traf of readBoxes(u, moof.start + moof.header, moof.end).filter((x) => x.type === 'traf')) {
+        const kids = readBoxes(u, traf.start + traf.header, traf.end);
+        const tfhd = kids.find((k) => k.type === 'tfhd');
+        const truns = kids.filter((k) => k.type === 'trun');
+        if (!tfhd || !truns.length) continue;
+        const tfFlags = be32(u, tfhd.start + tfhd.header) & 0xffffff;
+        if (be32(u, tfhd.start + tfhd.header + 4) !== trackId) continue;
+        let p = tfhd.start + tfhd.header + 8;
+        let base = moof.start;
+        if (tfFlags & 0x000001) { base = be64(u, p); p += 8; }
+        let defaultSize = 0;
+        if (tfFlags & 0x000002) p += 4;
+        if (tfFlags & 0x000008) p += 4;
+        if (tfFlags & 0x000010) { defaultSize = be32(u, p); p += 4; }
+        let run = null;
+        for (const trun of truns) {
+          const flags = be32(u, trun.start + trun.header) & 0xffffff;
+          const count = be32(u, trun.start + trun.header + 4);
+          let q = trun.start + trun.header + 8;
+          let start = run;
+          if (flags & 0x000001) { start = base + s32(u, q); q += 4; }
+          if (flags & 0x000004) q += 4;
+          if (start == null) continue;
+          for (let i = 0; i < count; i++) {
+            let size = defaultSize;
+            if (flags & 0x000100) q += 4;
+            if (flags & 0x000200) { size = be32(u, q); q += 4; }
+            if (flags & 0x000400) q += 4;
+            if (flags & 0x000800) q += 4;
+            if (!size || start + size > u.length) break;
+            out.push({ start, size });
+            start += size;
+          }
+          run = start;
+        }
+      }
+    }
+    return out.sort((a, b) => a.start - b.start);
+  }
+
+  function sampleRanges(index) {
+    const out = [];
+    for (const c of index.chunks) {
+      let off = c.offset;
+      for (const s of c.samples) {
+        out.push({ start: off, size: index.sizes[s], idx: s });
+        off += index.sizes[s];
+      }
+    }
+    return out;
+  }
+
+  // neutralise in-stream identification: overwrite those bytes with zeros.
+  // Lengths, offsets and every pixel/audio byte stay exactly where they were.
+  function neutraliseStreams(u, analysis) {
+    const out = new Uint8Array(u);
+    const targets = (analysis.targets || []).slice().sort((a, b) => a.start - b.start);
+    let bytes = 0;
+    let last = -1;
+    for (const t of targets) {
+      let start = Math.max(0, t.start);
+      const end = Math.min(out.length, t.end);
+      if (start < last) start = last;
+      if (end <= start) continue;
+      out.fill(0, start, end);
+      bytes += end - start;
+      last = end;
+    }
+    return { bytes: out, zeroed: bytes, count: targets.length };
+  }
+
+  // Deep clean = in-stream identification neutralised (bytes zeroed in place, so
+  // every length and offset stays valid) followed by the container rewrite.
+  function cleanVideo(u, analysis, opts) {
+    const wantDeep = !(opts && opts.deep === false) && analysis.deepSupported !== false;
+    let src = u;
+    let zeroed = 0;
+    let touched = 0;
+    if (wantDeep && analysis.targets && analysis.targets.length) {
+      const neutral = neutraliseStreams(u, analysis);
+      src = neutral.bytes;
+      zeroed = neutral.zeroed;
+      touched = neutral.count;
+    }
+    const res = stripVideo(src, analysis, opts);
+    res.deep = !!(wantDeep && touched);
+    res.zeroed = zeroed;
+    res.targets = touched;
+    res.deepSupported = analysis.deepSupported !== false;
+    return res;
+  }
+
+  /* ---------------- kind detection ---------------- */
+  function ext(name) {
+    const m = /\.([a-z0-9]+)$/i.exec(name || '');
+    return m ? m[1].toLowerCase() : '';
+  }
+  const IMAGE_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/bmp'];
+  const VIDEO_EXT = ['mp4', 'mov', 'm4v', 'mp4v'];
+  const IMAGE_EXT = ['jpg', 'jpeg', 'png', 'webp', 'bmp'];
+
+  function detectKind(file, head) {
+    const e = ext(file.name);
+    const mime = (file.type || '').toLowerCase();
+    const u = head;
+    if (u && u.length > 12 && latin1(u, 4, 8) === 'ftyp') return 'video';
+    if (u && u.length > 12 && ['moov', 'mdat', 'moof', 'free', 'skip'].includes(latin1(u, 4, 8))) return 'video';
+    if (VIDEO_EXT.includes(e) || mime.startsWith('video/')) return 'video';
+    if (u && u[0] === 0xff && u[1] === 0xd8) return 'image';
+    if (u && latin1(u, 0, 8) === '\x89PNG\r\n\x1a\n') return 'image';
+    if (u && latin1(u, 0, 4) === 'RIFF' && latin1(u, 8, 12) === 'WEBP') return 'image';
+    if (u && u[0] === 0x42 && u[1] === 0x4d) return 'image';
+    if (IMAGE_EXT.includes(e) || IMAGE_MIME.includes(mime) || mime.startsWith('image/')) return 'image';
+    return null;
+  }
+
+  /* ---------------- entry points ---------------- */
+  async function analyse(u8, kind, fileName) {
+    const name = fileName || '';
+    const nameMarks = filenameHits(name);
+    if (kind === 'video') {
+      const res = analyseVideo(u8);
+      res.nameMarks = nameMarks;
+      if (nameMarks.length) res.findings.unshift(finding({ where: 'filename', path: '/' + name, name: 'File name', value: name, marks: nameMarks }));
+      res.aiCount = res.findings.filter((f) => f.ai).length;
+      res.machineCount = res.findings.filter((f) => f.machine).length;
+      res.metaCount = res.findings.length - res.aiCount - res.machineCount;
+      return res;
+    }
+    const sig = latin1(u8, 0, 8);
+    let res;
+    if (u8[0] === 0xff && u8[1] === 0xd8) res = scanJpeg(u8);
+    else if (sig === '\x89PNG\r\n\x1a\n') res = await scanPng(u8);
+    else if (latin1(u8, 0, 4) === 'RIFF' && latin1(u8, 8, 12) === 'WEBP') res = scanWebp(u8);
+    else if (u8[0] === 0x42 && u8[1] === 0x4d) res = scanBmp(u8);
+    else res = { format: ext(name).toUpperCase() || 'IMAGE', findings: [], notes: ['CleanSlate could not read this image\u2019s container; it will still be rebuilt from its pixels.'] };
+    if (nameMarks.length) res.findings.unshift(finding({ where: 'filename', path: '/' + name, name: 'File name', value: name, marks: nameMarks }));
+    const fin = finish(res.findings);
+    return Object.assign(res, { kind: 'image', findings: fin.findings, aiCount: fin.aiCount, metaCount: fin.metaCount, machineCount: fin.machineCount, mode: 'rebuild', modeReason: 'image rebuilt from its pixels — every container tag is dropped' });
+  }
+
+  /* ---------------- ZIP ---------------- */
+  function crc32(data) {
+    let c = 0xffffffff;
+    for (let i = 0; i < data.length; i++) {
+      c ^= data[i];
+      for (let j = 0; j < 8; j++) c = (c >>> 1) ^ (0xedb88320 & -(c & 1));
+    }
+    return (c ^ 0xffffffff) >>> 0;
+  }
+
+  async function zip(entries) {
+    const parts = [];
+    const central = [];
+    let offset = 0;
+    const now = new Date();
+    const time = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1);
+    const date = ((Math.max(1980, now.getFullYear()) - 1980) << 9) | ((now.getMonth() + 1) << 5) | Math.max(1, now.getDate());
+    for (const f of entries) {
+      const name = enc8(f.name);
+      const data = new Uint8Array(await f.blob.arrayBuffer());
+      const crc = crc32(data);
+      const local = new Uint8Array(30 + name.length);
+      const v = new DataView(local.buffer);
+      v.setUint32(0, 0x04034b50, true);
+      v.setUint16(4, 20, true);
+      v.setUint16(6, 0x800, true);
+      v.setUint16(10, time, true);
+      v.setUint16(12, date, true);
+      v.setUint32(14, crc, true);
+      v.setUint32(18, data.length, true);
+      v.setUint32(22, data.length, true);
+      v.setUint16(26, name.length, true);
+      local.set(name, 30);
+      parts.push(local, data);
+      const h = new Uint8Array(46 + name.length);
+      const q = new DataView(h.buffer);
+      q.setUint32(0, 0x02014b50, true);
+      q.setUint16(4, 20, true);
+      q.setUint16(6, 20, true);
+      q.setUint16(8, 0x800, true);
+      q.setUint16(12, time, true);
+      q.setUint16(14, date, true);
+      q.setUint32(16, crc, true);
+      q.setUint32(20, data.length, true);
+      q.setUint32(24, data.length, true);
+      q.setUint16(28, name.length, true);
+      q.setUint32(42, offset, true);
+      h.set(name, 46);
+      central.push(h);
+      offset += local.length + data.length;
+    }
+    const size = central.reduce((a, x) => a + x.length, 0);
+    const end = new Uint8Array(22);
+    const e = new DataView(end.buffer);
+    e.setUint32(0, 0x06054b50, true);
+    e.setUint16(8, entries.length, true);
+    e.setUint16(10, entries.length, true);
+    e.setUint32(12, size, true);
+    e.setUint32(16, offset, true);
+    return new Blob([...parts, ...central, end], { type: 'application/zip' });
+  }
+
+  root.CleanSlateCore = {
+    VERSION, bytesText, matchAi, matchAiKey, filenameHits, analyse, analyseVideo, stripVideo,
+    detectKind, crc32, zip, strings, latin1, be32, be16, fourcc, uuidPretty,
+    stripImageLossless, neutraliseStreams, cleanVideo,
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+/* ===== END CLEANSLATE CORE ===== */
+  </script>
+  <script id="cleanslate-ui">
+/* CleanSlate UI — talks to CleanSlateCore, never re-implements it */
+(() => {
+  const C = window.CleanSlateCore;
+  const $ = (s) => document.querySelector(s);
+  const drop = $('#drop'), picker = $('#picker'), list = $('#list'), queue = $('#queue'), clean = $('#clean'), settings = $('.settings');
+
+  let items = [];
+  let format = 'image/jpeg', quality = 92, background = '#ffffff', resizePreset = 'original', resizeMode = 'crop';
+  let rename = false, baseName = 'COV', numberFiles = true, startNumber = 1;
+  let imageMode = 'lossless'; // lossless = strip tags only, pixels untouched
+  const ext = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
+  const resizeTargets = {
+    'instagram-portrait': [1080, 1350], 'instagram-square': [1080, 1080], 'instagram-landscape': [1080, 566],
+    'meta-vertical': [1080, 1920], 'facebook-landscape': [1200, 630], 'facebook-portrait': [1080, 1350],
+    tiktok: [1080, 1920], linkedin: [1200, 627], x: [1600, 900], pinterest: [1000, 1500], youtube: [1280, 720],
+  };
+  const MAX_BYTES = 2 * 1024 * 1024 * 1024;
+  const KIND_LABEL = { image: 'image', video: 'video' };
+
+  function toast(msg) {
+    const el = $('#toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toast.t);
+    toast.t = setTimeout(() => el.classList.remove('show'), 7000);
+  }
+
+  const safePart = (n) => n.trim().replace(/[^a-zA-Z0-9._ -]+/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'file';
+  // videos keep their container; lossless images keep their own format too
+  const srcExt = (x) => (x.ext === 'jpeg' ? 'jpg' : x.ext || 'jpg');
+  const outExt = (x) => (x.kind === 'video' || imageMode === 'lossless' ? srcExt(x) : ext[format]);
+  function outName(x) {
+    const index = items.indexOf(x);
+    const base = safePart(rename ? baseName : x.name0.replace(/\.[^.]+$/, ''));
+    if (rename) return base + (numberFiles ? '-' + (startNumber + index) : '') + '.' + outExt(x);
+    return base + '-clean.' + outExt(x);
+  }
+  function updateRenamePreview() {
+    const base = safePart(baseName), first = base + (numberFiles ? '-' + startNumber : '') + '.' + ext[format];
+    const second = base + (numberFiles ? '-' + (startNumber + 1) : '') + '.' + ext[format];
+    $('#renamePreview').textContent = 'Preview: ' + first + (numberFiles ? ', ' + second + '…' : '');
+  }
+
+  /* ---------- output for images: rebuild from rendered pixels ---------- */
+  async function encode(file) {
+    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    try {
+      const target = resizeTargets[resizePreset], c = document.createElement('canvas');
+      if (target) { c.width = target[0]; c.height = target[1]; } else { c.width = bitmap.width; c.height = bitmap.height; }
+      const ctx = c.getContext('2d', { alpha: format !== 'image/jpeg' });
+      if (!ctx) throw new Error('Canvas unavailable');
+      if (format === 'image/jpeg' || (target && resizeMode === 'fit')) { ctx.fillStyle = background; ctx.fillRect(0, 0, c.width, c.height); }
+      if (!target) ctx.drawImage(bitmap, 0, 0);
+      else if (resizeMode === 'fit') {
+        const scale = Math.min(c.width / bitmap.width, c.height / bitmap.height);
+        const w = Math.max(1, Math.round(bitmap.width * scale)), h = Math.max(1, Math.round(bitmap.height * scale));
+        ctx.drawImage(bitmap, (c.width - w) / 2, (c.height - h) / 2, w, h);
+      } else {
+        const scale = Math.max(c.width / bitmap.width, c.height / bitmap.height);
+        const sw = c.width / scale, sh = c.height / scale;
+        ctx.drawImage(bitmap, (bitmap.width - sw) / 2, (bitmap.height - sh) / 2, sw, sh, 0, 0, c.width, c.height);
+      }
+      const blob = await new Promise((r) => c.toBlob(r, format, format === 'image/png' ? undefined : quality / 100));
+      if (!blob) throw new Error('Format not supported');
+      return blob;
+    } finally { bitmap.close(); }
+  }
+
+  /* ---------- output for video: confirm the rewritten file still plays ---------- */
+  function probeVideo(bytes, type) {
+    return new Promise((resolve) => {
+      const url = URL.createObjectURL(new Blob([bytes], { type: type || 'video/mp4' }));
+      const v = document.createElement('video');
+      let settled = false;
+      const finish = (ok, info) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        v.removeAttribute('src');
+        try { v.load(); } catch (e) { /* ignore */ }
+        URL.revokeObjectURL(url);
+        resolve({ ok, info });
+      };
+      const timer = setTimeout(() => finish(false, 'playback check timed out'), 20000);
+      v.preload = 'metadata';
+      v.muted = true;
+      v.onloadedmetadata = () => {
+        const dims = v.videoWidth ? `${v.videoWidth}×${v.videoHeight}` : 'audio only';
+        const len = isFinite(v.duration) && v.duration > 0 ? `, ${v.duration.toFixed(1)}s` : '';
+        finish(!!(v.videoWidth || v.duration > 0), dims + len);
+      };
+      v.onerror = () => finish(false, 'browser refused the rewritten file');
+      v.src = url;
+    });
+  }
+
+  /* ---------- queue ---------- */
+  async function add(fileList) {
+    const skipped = [];
+    for (const file of [...fileList]) {
+      const head = new Uint8Array(await file.slice(0, 64).arrayBuffer());
+      const kind = C.detectKind(file, head);
+      if (!kind) { skipped.push(file.name); continue; }
+      const item = {
+        id: (crypto.randomUUID ? crypto.randomUUID() : String(Math.random())),
+        file, name0: file.name, kind, ext: (file.name.split('.').pop() || '').toLowerCase(),
+        size: file.size, status: 'Reading…', findings: [], aiCount: 0, metaCount: 0, output: null,
+      };
+      items.push(item);
+      render();
+      try {
+        if (file.size > MAX_BYTES) throw new Error('larger than the 2 GB browser limit');
+        item.bytes = new Uint8Array(await file.arrayBuffer());
+        item.analysis = await C.analyse(item.bytes, kind, file.name);
+        item.findings = item.analysis.findings;
+        item.aiCount = item.analysis.aiCount;
+        item.metaCount = item.analysis.metaCount;
+        item.machineCount = item.analysis.machineCount || 0;
+        item.notes = item.analysis.notes || [];
+        item.status = 'Ready';
+        if (kind === 'image') item.url = URL.createObjectURL(file);
+      } catch (e) {
+        item.status = 'Failed';
+        item.error = e.message || String(e);
+      }
+      render();
+    }
+    if (skipped.length) toast(`Skipped ${skipped.length} unsupported file${skipped.length === 1 ? '' : 's'}: ${skipped.slice(0, 3).join(', ')}${skipped.length > 3 ? '…' : ''}`);
+  }
+
+  function chip(text, cls) {
+    const s = document.createElement('span');
+    s.className = 'chip' + (cls ? ' ' + cls : '');
+    s.textContent = text;
+    return s;
+  }
+
+  function findingRow(f) {
+    const row = document.createElement('div');
+    row.className = 'frow' + (f.ai ? ' ai' : (f.machine ? ' machine' : ''));
+    const tag = document.createElement('b');
+    tag.textContent = f.ai ? 'AI' : (f.machine ? 'ID' : 'tag');
+    const name = document.createElement('span');
+    name.className = 'fname';
+    name.textContent = f.name;
+    const val = document.createElement('span');
+    val.className = 'fval';
+    val.textContent = f.value;
+    const where = document.createElement('i');
+    where.textContent = f.where;
+    row.append(tag, name, val, where);
+    return row;
+  }
+
+  function card(x) {
+    const el = document.createElement('article');
+    el.className = 'card';
+    const thumb = x.kind === 'image' && x.url
+      ? Object.assign(document.createElement('img'), { alt: '', src: x.url })
+      : Object.assign(document.createElement('div'), { className: 'vid', textContent: '▶' });
+    const info = document.createElement('div');
+    info.className = 'info';
+    const nm = document.createElement('strong');
+    nm.textContent = x.name || x.name0;
+    const sub = document.createElement('span');
+    sub.textContent = `${C.bytesText(x.size)} · ${x.kind === 'video' ? (x.analysis && x.analysis.format) || 'video' : (x.analysis && x.analysis.format) || 'image'}`;
+    info.append(nm, sub);
+    if (x.kind === 'image' && thumb.naturalWidth) sub.textContent += ` · ${thumb.naturalWidth}×${thumb.naturalHeight}`;
+    if (x.kind === 'image' && thumb.tagName === 'IMG') {
+      thumb.addEventListener('load', () => {
+        if (thumb.naturalWidth) { sub.textContent = `${C.bytesText(x.size)} · ${x.analysis.format} · ${thumb.naturalWidth}×${thumb.naturalHeight}`; }
+      }, { once: true });
+    }
+    const chips = document.createElement('div');
+    chips.className = 'chips';
+    if (x.aiCount) chips.append(chip(x.aiCount + ' AI trace' + (x.aiCount === 1 ? '' : 's'), 'ai'));
+    else if (x.kind === 'video' && x.status !== 'Reading…') chips.append(chip('no AI traces found', 'clean'));
+    if (x.machineCount) chips.append(chip(x.machineCount + ' encoder ID' + (x.machineCount === 1 ? '' : 's'), 'machine'));
+    if (x.metaCount) chips.append(chip(x.metaCount + ' metadata tag' + (x.metaCount === 1 ? '' : 's')));
+    if (x.mode) {
+      const label = x.mode === 'lossless' ? 'lossless strip'
+        : x.kind === 'video' ? (x.mode === 'pad' ? 'in-place clean' : 'rewritten') + (x.deep ? ' + deep' : '')
+          : 'rebuilt (pixels re-encoded)';
+      chips.append(chip(label, x.mode === 'lossless' || x.kind === 'video' ? 'clean' : ''));
+    }
+    if (x.kind === 'image' && (x.mode === 'lossless' || (imageMode === 'lossless' && !x.output))) chips.append(chip('no quality loss', 'clean'));
+    const status = document.createElement('div');
+    status.className = 'status' + (x.status === 'Cleaned' ? ' done' : x.status === 'Failed' ? ' error' : '');
+    status.textContent = x.status;
+    if (x.output) {
+      const small = document.createElement('small');
+      small.textContent = C.bytesText(x.output.size);
+      status.append(small);
+    }
+    const btn = document.createElement('button');
+    btn.className = 'icon' + (x.output ? ' download' : '');
+    btn.setAttribute('aria-label', x.output ? 'Download ' + (x.name || x.name0) : 'Remove ' + x.name0);
+    btn.textContent = x.output ? '↓' : '×';
+    btn.onclick = () => (x.output ? download(x.output, x.name) : remove(x.id));
+    el.append(thumb, info, chips, status, btn);
+
+    if (x.error) {
+      const err = document.createElement('p');
+      err.className = 'err';
+      err.textContent = x.error;
+      el.append(err);
+    }
+    if (x.findings && x.findings.length) {
+      const toggle = document.createElement('button');
+      toggle.className = 'link find-toggle';
+      toggle.textContent = `What was found (${x.findings.length})`;
+      const box = document.createElement('div');
+      box.className = 'findings';
+      x.findings.forEach((f) => box.append(findingRow(f)));
+      (x.notes || []).forEach((n) => {
+        const p = document.createElement('p');
+        p.className = 'note';
+        p.textContent = n;
+        box.append(p);
+      });
+      toggle.onclick = () => {
+        box.classList.toggle('show');
+        toggle.textContent = (box.classList.contains('show') ? 'Hide' : 'What was found') + ` (${x.findings.length})`;
+      };
+      el.append(toggle, box);
+    }
+    return el;
+  }
+
+  function render() {
+    const images = items.filter((x) => x.kind === 'image');
+    queue.classList.toggle('show', !!items.length);
+    settings.classList.toggle('dim', items.length > 0 && images.length === 0);
+    settings.classList.toggle('rebuildmode', imageMode === 'rebuild');
+    clean.disabled = !items.length || items.some((x) => /ing…$/.test(x.status));
+    clean.textContent = items.length ? `Clean ${items.length} file${items.length === 1 ? '' : 's'}` : 'Clean files';
+    const totalIn = items.reduce((a, x) => a + x.size, 0);
+    $('#summary').textContent = items.length
+      ? `${items.length} selected · ${C.bytesText(totalIn)} total · ${images.length} image${images.length === 1 ? '' : 's'}, ${items.length - images.length} video${items.length - images.length === 1 ? '' : 's'}`
+      : '';
+    list.innerHTML = '';
+    items.forEach((x) => list.append(card(x)));
+    const done = items.filter((x) => x.output);
+    $('#downloadbar').classList.toggle('show', !!done.length);
+    $('#ready').textContent = `${done.length} clean file${done.length === 1 ? '' : 's'} ready`;
+    $('#saving').textContent = done.length ? `${C.bytesText(totalIn)} → ${C.bytesText(done.reduce((a, x) => a + x.output.size, 0))}` : '';
+    renderReport();
+  }
+
+  function renderReport() {
+    const box = $('#report');
+    const withAi = items.filter((x) => x.aiCount > 0);
+    const aiTotal = items.reduce((a, x) => a + x.aiCount, 0);
+    const tagTotal = items.reduce((a, x) => a + x.metaCount, 0);
+    box.classList.toggle('show', !!items.length);
+    const sum = $('#reportSummary');
+    if (!items.length) { sum.textContent = ''; return; }
+    const idTotal = items.reduce((a, x) => a + (x.machineCount || 0), 0);
+    const idText = idTotal ? ` · ${idTotal} encoder ID${idTotal === 1 ? '' : 's'} (machine traces)` : '';
+    sum.textContent = withAi.length
+      ? `${aiTotal} AI trace${aiTotal === 1 ? '' : 's'} found in ${withAi.length} of ${items.length} file${items.length === 1 ? '' : 's'}${idText}${tagTotal ? ` · ${tagTotal} other metadata tag${tagTotal === 1 ? '' : 's'}` : ''}`
+      : `No AI traces found in ${items.length} file${items.length === 1 ? '' : 's'}${idText}${tagTotal ? ` · ${tagTotal} metadata tag${tagTotal === 1 ? '' : 's'}` : ''} — everything found will still be removed`;
+    const body = $('#reportBody');
+    body.innerHTML = '';
+    items.filter((x) => x.aiCount).slice(0, 6).forEach((x) => {
+      const line = document.createElement('p');
+      line.className = 'rline';
+      line.textContent = `${x.name0} — ${x.aiCount} AI trace${x.aiCount === 1 ? '' : 's'}: ` +
+        [...new Set(x.findings.filter((f) => f.ai).flatMap((f) => (f.marks.length ? f.marks : [f.name])))].slice(0, 4).join(', ');
+      body.append(line);
+    });
+  }
+
+  function reportText() {
+    const when = new Date().toLocaleString('en-GB');
+    const out = [`CleanSlate report — ${when}`, ''];
+    out.push(`Files: ${items.length} · AI traces: ${items.reduce((a, x) => a + x.aiCount, 0)} · encoder IDs (machine traces): ${items.reduce((a, x) => a + (x.machineCount || 0), 0)} · other metadata tags: ${items.reduce((a, x) => a + x.metaCount, 0)}`, '');
+    for (const x of items) {
+      out.push(`FILE  ${x.name0}  (${x.kind === 'video' ? (x.analysis && x.analysis.format) || 'video' : (x.analysis && x.analysis.format) || 'image'}, ${C.bytesText(x.size)}${x.output ? ' → ' + C.bytesText(x.output.size) : ''})`);
+      if (x.note) out.push(`  method: ${x.note}`);
+      else if (x.analysis) out.push(`  method: ${x.analysis.modeReason || ''}`);
+      if (x.status === 'Failed') out.push(`  FAILED: ${x.error || 'unknown error'}`);
+      const ai = x.findings.filter((f) => f.ai);
+      const ids = x.findings.filter((f) => f.machine);
+      const meta = x.findings.filter((f) => !f.ai && !f.machine);
+      if (ai.length) {
+        out.push(`  AI traces found (${ai.length}):`);
+        ai.forEach((f) => out.push(`    - [${f.where}] ${f.name}: ${f.value}`));
+      } else out.push('  AI traces found: none');
+      if (ids.length) {
+        out.push(`  machine traces found (${ids.length}) — encoder identification, neutralised:`);
+        ids.forEach((f) => out.push(`    - [${f.where}] ${f.name}: ${f.value}`));
+      }
+      if (meta.length) {
+        out.push(`  other metadata found (${meta.length}):`);
+        meta.forEach((f) => out.push(`    - [${f.where}] ${f.name}: ${f.value}`));
+      }
+      (x.notes || []).forEach((n) => out.push(`  note: ${n}`));
+      out.push('');
+    }
+    out.push('Every listed tag is removed by CleanSlate. Images: the container metadata is deleted and the pixels are NOT re-encoded, so image quality is identical. Videos: the metadata boxes are removed, the container is compacted, and encoder identification written inside the compressed streams (SEI user data, codec configuration, audio fill elements) is neutralised in place — decoded video frames and audio are byte-identical before and after. What cannot be removed: invisible pixel-level watermarks (e.g. SynthID), visible watermarks, and steganography.');
+    return out.join('\n');
+  }
+
+  function remove(id) {
+    const x = items.find((i) => i.id === id);
+    if (x && x.url) URL.revokeObjectURL(x.url);
+    items = items.filter((i) => i.id !== id);
+    render();
+  }
+
+  function reset() {
+    items.forEach((x) => { x.output = null; x.name = null; x.status = 'Ready'; });
+    render();
+  }
+
+  function download(blob, name) {
+    const u = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = u;
+    a.download = name || 'cleanslate-output';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(u), 2000);
+  }
+
+  /* ---------- the clean run ---------- */
+  clean.onclick = async () => {
+    clean.disabled = true;
+    for (const x of items) {
+      if (x.status === 'Cleaned') continue;
+      x.status = x.kind === 'video' ? 'Cleaning…' : 'Rebuilding…';
+      render();
+      try {
+        if (x.kind === 'video') {
+          let res = C.cleanVideo(x.bytes, x.analysis);
+          let probe = await probeVideo(res.bytes, x.file.type);
+          if (!probe.ok && res.mode === 'rewrite') {
+            res = C.cleanVideo(x.bytes, x.analysis, { forcePad: true }); // deep clean still applies
+            probe = await probeVideo(res.bytes, x.file.type);
+          }
+          if (!probe.ok) throw new Error('the cleaned video did not play back — the original was kept (' + probe.info + ')');
+          x.output = new Blob([res.bytes], { type: x.file.type || 'video/mp4' });
+          x.mode = res.mode;
+          x.deep = res.deep;
+          x.note = [res.method,
+            `${C.bytesText(res.sizeBefore)} → ${C.bytesText(res.sizeAfter)}`,
+            res.deep ? `in-stream identification neutralised in ${res.targets} place${res.targets === 1 ? '' : 's'} (${C.bytesText(res.zeroed)})` : 'no in-stream identification found',
+            'streams untouched: pixels and audio bit-identical',
+            `verified ${probe.info}`].join(' · ');
+        } else if (imageMode === 'lossless') {
+          const res = C.stripImageLossless(x.bytes, x.analysis);
+          x.output = new Blob([res.bytes], { type: x.file.type || 'image/jpeg' });
+          x.mode = 'lossless';
+          x.note = ['metadata stripped without re-encoding',
+            `${res.removed.length} item${res.removed.length === 1 ? '' : 's'} removed: ${res.removed.map((r) => r.what).join(', ') || 'none'}`,
+            `${C.bytesText(x.size)} → ${C.bytesText(res.bytes.length)}`,
+            'pixels untouched' + (res.kept.length ? ` · kept ${res.kept.join(', ')}` : '')].join(' · ');
+        } else {
+          x.output = await encode(x.file);
+          x.mode = 'rebuild';
+          x.note = 'rebuilt from rendered pixels — every container tag dropped, pixels re-encoded';
+        }
+        x.name = outName(x);
+        x.status = 'Cleaned';
+        delete x.error;
+      } catch (e) {
+        x.status = 'Failed';
+        x.error = e.message || String(e);
+      }
+      render();
+    }
+    clean.disabled = false;
+    const failed = items.filter((x) => x.status === 'Failed').length;
+    toast(failed ? `${failed} file${failed === 1 ? '' : 's'} could not be cleaned — nothing was downloaded for those` : 'All files cleaned. Nothing left your device.');
+  };
+
+  /* ---------- wiring ---------- */
+  $('#downloadAll').onclick = async () => {
+    const done = items.filter((x) => x.output);
+    if (!done.length) return;
+    download(await C.zip(done.map((x) => ({ name: x.name, blob: x.output }))), `cleanslate-${new Date().toISOString().slice(0, 10)}.zip`);
+  };
+  $('#reportDownload').onclick = () => download(new Blob([reportText()], { type: 'text/plain' }), `cleanslate-report-${new Date().toISOString().slice(0, 10)}.txt`);
+  $('#clear').onclick = () => {
+    items.forEach((x) => x.url && URL.revokeObjectURL(x.url));
+    items = [];
+    render();
+  };
+  drop.onclick = () => picker.click();
+  drop.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); picker.click(); } };
+  picker.onchange = (e) => { add(e.target.files); e.target.value = ''; };
+  ['dragenter', 'dragover'].forEach((n) => drop.addEventListener(n, (e) => { e.preventDefault(); drop.classList.add('drag'); }));
+  ['dragleave', 'drop'].forEach((n) => drop.addEventListener(n, (e) => { e.preventDefault(); drop.classList.remove('drag'); }));
+  drop.ondrop = (e) => add(e.dataTransfer.files);
+  window.addEventListener('dragover', (e) => e.preventDefault());
+  window.addEventListener('drop', (e) => e.preventDefault());
+
+  const modeButtons = document.querySelectorAll('#modeBox button');
+  function applyImageMode() {
+    modeButtons.forEach((b) => b.classList.toggle('active', b.dataset.mode === imageMode));
+    $('#modeNote').textContent = imageMode === 'lossless'
+      ? 'Pixels are not re-encoded. Only the metadata is deleted, so image quality is identical to the original.'
+      : 'Pixels are re-encoded: this is what converts the format and resizes to a Social size.';
+    settings.classList.toggle('lossless', imageMode === 'lossless');
+    reset();
+  }
+  modeButtons.forEach((b) => { b.onclick = () => { imageMode = b.dataset.mode; applyImageMode(); }; });
+  applyImageMode();
+
+  document.querySelectorAll('#formatRow button').forEach((b) => {
+    b.onclick = () => {
+      document.querySelectorAll('#formatRow button').forEach((x) => x.classList.remove('active'));
+      b.classList.add('active');
+      format = b.dataset.format;
+      $('#qualityBox').style.display = format === 'image/png' ? 'none' : 'block';
+      $('#backgroundBox').style.display = format === 'image/jpeg' ? 'flex' : 'none';
+      updateRenamePreview();
+      reset();
+    };
+  });
+  $('#resizePreset').onchange = (e) => {
+    resizePreset = e.target.value;
+    $('#resizeNote').textContent = resizePreset === 'original'
+      ? 'Original dimensions will be preserved.'
+      : `${resizeTargets[resizePreset][0]} × ${resizeTargets[resizePreset][1]} px · ${resizeMode === 'crop' ? 'The centre is cropped to fill.' : 'The whole image is fitted with the selected background.'}`;
+    reset();
+  };
+  $('#resizeMode').onchange = (e) => { resizeMode = e.target.value; $('#resizePreset').dispatchEvent(new Event('change')); };
+  $('#quality').oninput = (e) => { quality = +e.target.value; $('#qualityOut').value = quality + '%'; reset(); };
+  $('#background').oninput = (e) => { background = e.target.value; reset(); };
+  $('#renameToggle').onchange = (e) => { rename = e.target.checked; $('#renameControls').classList.toggle('show', rename); reset(); };
+  $('#baseName').oninput = (e) => { baseName = e.target.value; updateRenamePreview(); reset(); };
+  $('#numberFiles').onchange = (e) => { numberFiles = e.target.checked; updateRenamePreview(); reset(); };
+  $('#startNumber').oninput = (e) => { startNumber = Math.max(0, parseInt(e.target.value || '0', 10) || 0); updateRenamePreview(); reset(); };
+  updateRenamePreview();
+})();
+  </script>
+</body>
+</html>
