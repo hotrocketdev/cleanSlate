@@ -1,0 +1,59 @@
+# Sets exactly one of risk:low / risk:medium / risk:high on each PR from the files it
+# changes. Highest match wins. No checkout, no paid tools, ~10s.
+#   high:   migrations, auth, billing/payments, RLS/policies, .github/workflows,
+#           telecom/number code (Telnyx, Twilio, WhatsApp, SMS, voice, number pool)
+#   low:    docs, markdown, tests only, copy/translation files
+#   medium: everything else
+# Merge policy per label is in AGENTS.md / CLAUDE.md ("Review by risk"). A PR without a label
+# (for example from a fork, where the token is read-only) is treated as risk:medium.
+name: Risk label
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: risk-label-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  label:
+    name: Risk label
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request.number;
+            const files = (await github.paginate(github.rest.pulls.listFiles,
+              { owner, repo, pull_number: pr, per_page: 100 }))
+              .flatMap(f => [f.filename, f.previous_filename].filter(Boolean));
+            const high = /(^|\/)(migrations?|drizzle)\/|\.github\/workflows\/|(^|[\/._(-])(auth|oauth|login|signup|password|billing|payments?|stripe|checkout|subscriptions?)([\/._)-]|$)|(^|[\/._-])(rls|policies)([\/._-]|$)|telnyx|twilio|whatsapp|telecom|(^|[\/._-])(sms|voice|numbers?|number[-_]pool|phone[-_]?numbers?)([\/._-]|$)/i;
+            const low = /(\.mdx?$|\.txt$|^docs\/|(^|\/)(LICENSE|CHANGELOG|CODEOWNERS)$|^\.github\/(ISSUE_TEMPLATE|PULL_REQUEST_TEMPLATE)|\.(test|spec)\.[cm]?[jt]sx?$|(^|\/)(__tests__|tests?|e2e|__snapshots__)\/|(^|\/)(locales?|i18n|messages|copy)\/.*\.(json|ya?ml)$)/i;
+            let risk = 'low';
+            if (files.some(f => high.test(f))) risk = 'high';
+            else if (files.some(f => !low.test(f))) risk = 'medium';
+            core.info(`${files.length} files -> risk:${risk}`);
+            const defs = {
+              'risk:low': ['0E8A16', 'Docs/tests/copy only: merges on green CI, Codex advisory'],
+              'risk:medium': ['FBCA04', 'App code: Codex blocking, one fix round max'],
+              'risk:high': ['D93F0B', 'Migrations/auth/billing/RLS/workflows/telecom: Codex blocking'],
+            };
+            for (const [name, [color, description]] of Object.entries(defs)) {
+              try { await github.rest.issues.createLabel({ owner, repo, name, color, description }); } catch (e) { /* exists */ }
+            }
+            const current = (await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: pr, per_page: 100 }))
+              .data.map(l => l.name);
+            for (const old of current.filter(n => n.startsWith('risk:') && n !== `risk:${risk}`)) {
+              await github.rest.issues.removeLabel({ owner, repo, issue_number: pr, name: old });
+            }
+            if (!current.includes(`risk:${risk}`)) {
+              await github.rest.issues.addLabels({ owner, repo, issue_number: pr, labels: [`risk:${risk}`] });
+            }

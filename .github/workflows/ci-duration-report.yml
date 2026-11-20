@@ -1,0 +1,61 @@
+# Weekly CI time budget. Reads the last 7 days of successful pull_request runs of the
+# main CI workflow and reports p50 / p95 of execution time (first job start to last job
+# end, so time queued before the first job is not counted). Writes the numbers to the job
+# summary, and opens or updates one issue when p95 is over 10 minutes. No paging.
+name: CI duration report
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'   # Mondays 08:00 UTC
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  issues: write
+  contents: read
+
+jobs:
+  report:
+    name: CI duration report
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/github-script@v7
+        env:
+          WORKFLOW_FILE: ci.yml
+          MAX_SECONDS: '600'
+          ISSUE_TITLE: 'CI p95 over 10 minutes'
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const wf = process.env.WORKFLOW_FILE, cap = Number(process.env.MAX_SECONDS), title = process.env.ISSUE_TITLE;
+            const since = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
+            const runs = await github.paginate(github.rest.actions.listWorkflowRuns,
+              { owner, repo, workflow_id: wf, event: 'pull_request', status: 'success', created: `>=${since}`, per_page: 100 });
+            const xs = [];
+            for (const run of runs.slice(0, 300)) {
+              const jobs = (await github.paginate(github.rest.actions.listJobsForWorkflowRunAttempt,
+                { owner, repo, run_id: run.id, attempt_number: run.run_attempt || 1, per_page: 100 }))
+                .filter(j => j.conclusion !== 'skipped' && j.started_at && j.completed_at);
+              if (!jobs.length) continue;
+              const start = Math.min(...jobs.map(j => Date.parse(j.started_at)));
+              const end = Math.max(...jobs.map(j => Date.parse(j.completed_at)));
+              xs.push((end - start) / 1000);
+            }
+            xs.sort((a, b) => a - b);
+            const pct = p => { if (!xs.length) return null; const k = (xs.length - 1) * p; const i = Math.floor(k);
+              return i + 1 < xs.length ? xs[i] + (xs[i + 1] - xs[i]) * (k - i) : xs[i]; };
+            const fmt = s => s == null ? 'n/a' : `${Math.floor(s / 60)}m${String(Math.round(s % 60)).padStart(2, '0')}s`;
+            const p50 = pct(0.5), p95 = pct(0.95), over = p95 != null && p95 > cap;
+            const text = `CI execution time for \`${wf}\` on pull requests, last 7 days: p50 ${fmt(p50)}, p95 ${fmt(p95)} (n=${xs.length}, budget ${cap / 60} min).`;
+            await core.summary.addHeading('CI duration').addRaw(text).write();
+            core.info(text);
+            const open = (await github.paginate(github.rest.issues.listForRepo, { owner, repo, state: 'open', per_page: 100 }))
+              .find(i => i.title === title && !i.pull_request);
+            if (over) {
+              const body = `${text}\n\nOpened by \`.github/workflows/ci-duration-report.yml\`. Close it once p95 is back under 10 minutes.`;
+              if (open) await github.rest.issues.createComment({ owner, repo, issue_number: open.number, body });
+              else await github.rest.issues.create({ owner, repo, title, body });
+            } else if (open && p95 != null) {
+              await github.rest.issues.createComment({ owner, repo, issue_number: open.number, body: `${text}\n\nBack within budget; this can be closed.` });
+            }
