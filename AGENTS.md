@@ -224,3 +224,23 @@ If a task seems to require one of these, stop and report it.
 
 Brief. Outcomes, not narration. What changed, PR number, CI status, landed or not.
 Verify claims against the artifact — a green tick is not evidence.
+
+## Review by risk (one AI reviewer: Codex)
+
+The `Risk label` workflow puts exactly one label on every PR from the files it changes. How much review a PR gets depends on that label. **Until `.github/workflows/risk-label.yml` is active on the default branch (or if a PR has no `risk:*` label yet), classify it by the paths it changes: docs/tests/copy-only = `risk:low`; migrations, auth/oauth, billing, RLS, `.github/workflows` or telecom = `risk:high`; everything else = `risk:medium`.**
+
+- **`risk:low`** (docs, markdown, tests only, copy/translation files): merges as soon as required CI is green. The Codex review is **advisory**: `/workspace/automerge.sh` waits up to 10 minutes for Codex to post, logs what it said, resolves advisory threads and merges anyway. If Codex points at a real bug, fix it in a follow-up PR (and if merging manually via a script that blocks on unresolved threads, reply with the follow-up link and resolve the thread).
+- **`risk:medium`** (other application code): the Codex review is **blocking**, with **one fix round at most**. Collect every finding, fix the real ones in one push, request one fresh Codex review, and stop. If that re-review still raises something, fix only genuine bugs (security, data loss, crashes, wrong behaviour) and add `needs:jorge` for anything you are unsure about. No further rounds.
+- **`risk:high`** (migrations, auth, billing/payments, RLS/policies, `.github/workflows`, telecom/number code): the Codex review is **blocking** until it is clean. Batch each round's fixes into one push.
+
+Rules for every PR:
+
+- **Codex is the single AI reviewer.** Do not run agent cross-reviews, reviewer agents, "second opinion" sessions or self-review rounds.
+- **CodeRabbit is advisory only.** You may read its comments and fix real bugs it finds in the same single fix round. It never blocks a merge and never triggers an extra round. Ignore its nits and style suggestions. It is not a required check. (`/workspace/automerge.sh` resolves CodeRabbit threads automatically before merging; if merging via a strict local script, reply "Advisory — ignored/deferred" and resolve them first.)
+- **Branches do not need to be up to date with the base.** Strict up-to-date is off, so do not run update-branch just to refresh a green PR. A merge commit of the base branch does not need a new Codex review; the merge script accepts the review on the last non-merge commit.
+
+## Before you open a PR
+
+- **Run the local checks first:** lint, typecheck and the tests for what you changed. CI is the full test of truth, so do not run the whole suite locally.
+- **Affected tests only.** Run the tests that cover the files you touched (for example the touched package's tests, or the test runner's "related"/filter mode), not every suite.
+- **Keep PRs small:** aim for under 400 changed lines, not counting lockfiles and generated files. One concern per PR. Split bigger work into independent PRs that each pass CI on their own.
